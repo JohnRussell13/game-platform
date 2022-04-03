@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 /**
@@ -25,6 +26,9 @@ public class App extends Application {
     private ElementStatics elementStatics = new ElementStatics();
     private Pane layout = new Pane();
 
+    private Rectangle blackBandL = new Rectangle();
+    private Rectangle blackBandR = new Rectangle();
+
     public static void main(String[] args) {
         launch();
     }
@@ -32,6 +36,15 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Gold Rush - Forty-Niner");
+
+        /*      BLACK SIDEBARS      */
+        blackBandL.setWidth(blackStripWidth);
+        blackBandL.setHeight(fullscreenHegiht);
+        blackBandL.relocate(0, 0);
+
+        blackBandR.setWidth(blackStripWidth);
+        blackBandR.setHeight(fullscreenHegiht);
+        blackBandR.relocate(blackStripWidth + ratio * sceneWidth, 0);
 
         /*      CREATE LAYOUT       */
         for(int i = 0; i < elementStatics.size(); i++){
@@ -56,19 +69,25 @@ public class App extends Application {
                     break;
                 }
             }
-            
         });
-
     }
 
     private void changeResolution(Stage primaryStage){
-        
         for(int i = 0; i < elementStatics.size(); i++){
             ImageView current = elementStatics.getElement(i).getImageView();
             current.setLayoutX(mapPosition(current.getLayoutX(), 'X'));
             current.setLayoutY(mapPosition(current.getLayoutY(), 'Y'));
             current.setFitWidth(mapSize(current.getFitWidth()));
             current.setFitHeight(mapSize(current.getFitHeight()));
+        }
+
+        if(fullscreenFlag){
+            layout.getChildren().remove(blackBandL);
+            layout.getChildren().remove(blackBandR);
+        }
+        else{
+            layout.getChildren().add(blackBandL);
+            layout.getChildren().add(blackBandR);
         }
         
         fullscreenFlag = !fullscreenFlag;
