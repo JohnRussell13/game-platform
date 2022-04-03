@@ -3,6 +3,7 @@ package com.goldrush;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -13,9 +14,11 @@ import javafx.stage.Stage;
 public class App extends Application {
     private double sceneWidth = 600;
     private double sceneHeight = 457;
+
     private double fullscreenHegiht = 1080;
+    private double fullscreenWidth = 1920;
     private double ratio = fullscreenHegiht/sceneHeight;
-    private double fullscreenWidth = ratio * sceneWidth;
+    private double blackStripWidth = (fullscreenWidth - ratio * sceneWidth)/2;
 
     private boolean fullscreenFlag = false;
 
@@ -58,9 +61,33 @@ public class App extends Application {
 
     }
 
-    public void changeResolution(Stage primaryStage){
-        layout.getChildren().get(0).setLayoutX(50);
+    private void changeResolution(Stage primaryStage){
+        
+        for(int i = 0; i < elementStatics.size(); i++){
+            ImageView current = elementStatics.getElement(i).getImageView();
+            current.setLayoutX(mapPosition(current.getLayoutX(), 'X'));
+            current.setLayoutY(mapPosition(current.getLayoutY(), 'Y'));
+            current.setFitWidth(mapSize(current.getFitWidth()));
+            current.setFitHeight(mapSize(current.getFitHeight()));
+        }
+        
         fullscreenFlag = !fullscreenFlag;
         primaryStage.setFullScreen(fullscreenFlag);
+    }
+
+    private double mapPosition(double val, char axis){
+        if(axis == 'X'){
+            if(fullscreenFlag) return (val - blackStripWidth) / ratio;
+            else return val * ratio + blackStripWidth;
+        }
+        else{
+            if(fullscreenFlag) return val / ratio;
+            else return val * ratio;
+        }
+    }
+
+    private double mapSize(double val){
+        if(fullscreenFlag) return val / ratio;
+        else return val * ratio;
     }
 }
