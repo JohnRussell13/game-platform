@@ -95,15 +95,18 @@ public class App extends Application {
     private void changeResolution(Stage primaryStage){
         for(int i = 0; i < elementStatics.size(); i++){
             ImageView current = elementStatics.getElement(i).getImageView();
-            current.setLayoutX(mapPosition(current.getLayoutX(), 'X'));
-            current.setLayoutY(mapPosition(current.getLayoutY(), 'Y'));
+            current.setLayoutX(mapPositionX(current.getLayoutX()));
+            current.setLayoutY(mapSize(current.getLayoutY()));
             current.setFitWidth(mapSize(current.getFitWidth()));
             current.setFitHeight(mapSize(current.getFitHeight()));
+
+            elementStatics.getElement(i).setBlockX(mapPositionX(elementStatics.getElement(i).getBlockX()));
+            elementStatics.getElement(i).setBlockY(mapSize(elementStatics.getElement(i).getBlockY()));
         }
 
         ImageView current = player.getImageView();
-        current.setLayoutX(mapPosition(current.getLayoutX(), 'X'));
-        current.setLayoutY(mapPosition(current.getLayoutY(), 'Y'));
+        current.setLayoutX(mapPositionX(current.getLayoutX()));
+        current.setLayoutY(mapSize(current.getLayoutY()));
         current.setFitWidth(mapSize(current.getFitWidth()));
         current.setFitHeight(mapSize(current.getFitHeight()));
 
@@ -122,19 +125,41 @@ public class App extends Application {
         primaryStage.setFullScreen(fullscreenFlag);
     }
 
-    private double mapPosition(double val, char axis){
-        if(axis == 'X'){
-            if(fullscreenFlag) return (val - blackStripWidth) / ratio;
-            else return val * ratio + blackStripWidth;
-        }
-        else{
-            if(fullscreenFlag) return val / ratio;
-            else return val * ratio;
-        }
+    private double mapPositionX(double val){
+        if(fullscreenFlag) return (val - blackStripWidth) / ratio;
+        else return val * ratio + blackStripWidth;
     }
 
     private double mapSize(double val){
         if(fullscreenFlag) return val / ratio;
         else return val * ratio;
+    }
+
+    private double[] mapPositionX(double[] val){
+        double[] result = new double[2];
+        if(fullscreenFlag){
+            result[0] = (val[0] - blackStripWidth) / ratio;
+            result[1] = (val[1] - blackStripWidth) / ratio;
+        }
+        else{
+            result[0] = val[0] * ratio + blackStripWidth;
+            result[1] = val[1] * ratio + blackStripWidth;
+        }
+        
+        return result;
+    }
+
+    private double[] mapSize(double[] val){
+        double[] result = new double[2];
+        if(fullscreenFlag){
+            result[0] = val[0] / ratio;
+            result[1] = val[1] / ratio;
+        }
+        else{
+            result[0] = val[0] * ratio;
+            result[1] = val[1] * ratio;
+        }
+
+        return result;
     }
 }

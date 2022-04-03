@@ -55,6 +55,20 @@ public class Player {
                     break;
             }
 
+            double feetX = newX + imageView.getFitWidth()/2;
+            double feetY = newY + imageView.getFitHeight();
+
+            for(int i = elementStatics.size()-1; i >= 0; i--){
+                double[] blockX = elementStatics.getElement(i).getBlockX();
+                double[] blockY = elementStatics.getElement(i).getBlockY();
+                if(blockX[0] < feetX && feetX < blockX[1]
+                && blockY[0] < feetY && feetY < blockY[1]){
+                    
+                    if(elementStatics.getElement(i).getBlockFlag()) return;
+                    else break;
+                }
+            }
+
             imageView.relocate(newX, newY);
             
             layout.getChildren().remove(imageView);
@@ -62,7 +76,7 @@ public class Player {
 
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
-                if(current.getLayoutY() + elementStatics.getElement(i).getBlock()*current.getFitHeight() > newY){
+                if(current.getLayoutY() + elementStatics.getElement(i).getForeground()*current.getFitHeight() > feetY){
                     layout.getChildren().remove(current);
                     layout.getChildren().add(current);
                 }
