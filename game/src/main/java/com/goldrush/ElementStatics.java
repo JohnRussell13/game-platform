@@ -25,13 +25,14 @@ public class ElementStatics {
             Scanner scanIn = new Scanner(file);
 
             for(int i = 0; i < count; i++){
-                String[] line = scanIn.nextLine().split(",", 5);
+                String[] line = scanIn.nextLine().split(",", 6);
                 String name = line[0];
                 double initHeight = Double.parseDouble(line[1]);
                 double initWidth = Double.parseDouble(line[2]);
                 double initX = Double.parseDouble(line[3]);
                 double initY = Double.parseDouble(line[4]);
-                elementStatic[i] = new ElementStatic(name, initHeight, initWidth, initX, initY);
+                double block = Double.parseDouble(line[5]);
+                elementStatic[i] = new ElementStatic(name, initHeight, initWidth, initX, initY, block);
             }
             scanIn.close();
         } catch (Exception e) {

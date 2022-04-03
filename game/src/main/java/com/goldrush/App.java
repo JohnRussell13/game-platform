@@ -79,7 +79,7 @@ public class App extends Application {
                 case S:
                 case A:
                 case D:
-                    player.move(event.getCode());
+                    player.move(event.getCode(), layout, elementStatics);
                     break;
                 case F:
                 case ESCAPE:

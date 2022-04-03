@@ -3,6 +3,7 @@ package com.goldrush;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Pane;
 
 public class Player {
     private Image image[] = new Image[4]; // 4 directions
@@ -26,7 +27,7 @@ public class Player {
         imageView.relocate(initX, initY); 
     }
 
-    public void move(KeyCode direction){
+    public void move(KeyCode direction, Pane layout, ElementStatics elementStatics){
         double posX = imageView.getLayoutX();
         double posY = imageView.getLayoutY();
         double newX = posX;
@@ -55,6 +56,17 @@ public class Player {
             }
 
             imageView.relocate(newX, newY);
+            
+            layout.getChildren().remove(imageView);
+            layout.getChildren().add(imageView);
+
+            for(int i = 0; i < elementStatics.size(); i++){
+                ImageView current = elementStatics.getElement(i).getImageView();
+                if(current.getLayoutY() + elementStatics.getElement(i).getBlock()*current.getFitHeight() > newY){
+                    layout.getChildren().remove(current);
+                    layout.getChildren().add(current);
+                }
+            }
         }
     }
 
