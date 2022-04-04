@@ -80,6 +80,21 @@ public class Player extends Element {
                 if(current.getLayoutY() + elementStatics.getElement(i).getForeground()*current.getFitHeight() > feetY){
                     layout.getChildren().remove(current);
                     layout.getChildren().add(current);
+                    for(int j = 0; j < npcs.getSize(); j++){
+                        ImageView npc = npcs.getNPCs()[j].getImageView();
+                        double npcFeetY = npc.getLayoutY() + npc.getFitWidth();
+                        if(current.getLayoutY() + elementStatics.getElement(i).getForeground()*current.getFitHeight() < npcFeetY){
+                            layout.getChildren().remove(npc);
+                            layout.getChildren().add(npc);
+                        }
+                    }
+                }
+            }
+            for(int i = 0; i < npcs.getSize(); i++){
+                ImageView current = npcs.getNPCs()[i].getImageView();
+                if(current.getLayoutY() + elementStatics.getElement(i).getForeground()*current.getFitHeight() > feetY){
+                    layout.getChildren().remove(current);
+                    layout.getChildren().add(current);
                 }
             }
 
