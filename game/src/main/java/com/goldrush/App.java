@@ -124,6 +124,12 @@ public class App extends Application {
                 case O:
                     seller.go(0);
                     break;
+                case Y:
+                    seller.come(1);
+                    break;
+                case U:
+                    seller.go(1);
+                    break;
                 default:
                     break;
                 }

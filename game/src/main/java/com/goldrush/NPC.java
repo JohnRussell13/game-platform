@@ -26,6 +26,8 @@ public class NPC {
     private int countAnimation;
     private int stagesStage;
 
+    private int qucikStorage;
+
     double dX;
     double dY;
 
@@ -33,6 +35,16 @@ public class NPC {
 
     public NPC(String title){
         name = title;
+
+        /*  
+            FORMAT IS: 
+                        - WIDTH, HEIGHT, POSITION X, POSITION Y, STAGES
+                        - STAGE[0]
+                        - ...
+                        - STAGE[STAGES-1]
+                        - ANIMATIONPOINTS[0]
+                        - ...
+        */
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/src/main/resources/com/goldrush/" + title + ".txt"));
@@ -87,12 +99,24 @@ public class NPC {
     public void come(int part){
         countAnimation = 0;
         stagesStage = part;
+
+        qucikStorage = 0;
+        for(int i = 0; i < part; i++){
+            qucikStorage += stage[i];
+        }
+
         recursiveWalk(true);
     }
 
     public void go(int part){
         countAnimation = stage[part];
         stagesStage = part;
+
+        qucikStorage = 0;
+        for(int i = 0; i < part; i++){
+            qucikStorage += stage[i];
+        }
+
         recursiveWalk(false);
     }
 
@@ -113,11 +137,11 @@ public class NPC {
         dY = 0;
 
         if(countAnimation % 2 == 0) {
-            dX = animationPoints[countAnimation];
+            dX = animationPoints[qucikStorage + countAnimation];
             if(!foreward) dX = -dX;
         }
         else{
-            dY = animationPoints[countAnimation];
+            dY = animationPoints[qucikStorage + countAnimation];
             if(!foreward) dY = -dY;
         }
 
