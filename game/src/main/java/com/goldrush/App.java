@@ -35,10 +35,10 @@ public class App extends Application {
 
     private boolean fullscreenFlag = false;
 
-    private Background background = new Background();
+    private Element background = new Element("background");
+    private Element menu = new Element("menu");
     private ElementStatics elementStatics = new ElementStatics();
     private Player player = new Player("player");
-    private Menu menu = new Menu();
 
     private Rectangle blackBandL = new Rectangle();
     private Rectangle blackBandR = new Rectangle();
