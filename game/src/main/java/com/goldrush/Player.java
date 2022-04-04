@@ -12,6 +12,7 @@ public class Player {
     private String name;
     private boolean playerFlag = true;
     private double stepSize = 5;
+    private double offset = 20;
 
     public Player(String title, double initHeight, double initWidth, double initX, double initY){
         name = title;
@@ -28,7 +29,8 @@ public class Player {
         imageView.relocate(initX, initY); 
     }
 
-    public void move(KeyCode direction, Pane layout, ElementStatics elementStatics, Rectangle blackBandL, Rectangle blackBandR, boolean screenFlag){
+    public int move(KeyCode direction, Pane layout, ElementStatics elementStatics, Rectangle blackBandL, Rectangle blackBandR, 
+                    boolean screenFlag, double screenWidth, double screenHeight){
         double posX = imageView.getLayoutX();
         double posY = imageView.getLayoutY();
         double newX = posX;
@@ -39,18 +41,22 @@ public class Player {
                 case W:
                     imageView.setImage(image[0]);
                     newY = newY - stepSize;
+                    if(newY - offset < 0) return 1;
                     break;
                 case S:
                     imageView.setImage(image[1]);
                     newY = newY + stepSize;
+                    if(screenHeight < newY + imageView.getFitHeight() + offset) return 2;
                     break;
                 case A:
                     imageView.setImage(image[2]);
                     newX = newX - stepSize;
+                    if(newX - offset < blackBandL.getWidth()) return 3;
                     break;
                 case D:
                     imageView.setImage(image[3]);
                     newX = newX + stepSize;
+                    if(screenWidth < blackBandL.getWidth() + newX + imageView.getFitWidth() + offset) return 4;
                     break;
                 default:
                     break;
@@ -59,13 +65,13 @@ public class Player {
             double feetX = newX + imageView.getFitWidth()/2;
             double feetY = newY + imageView.getFitHeight();
 
+
             for(int i = elementStatics.size()-1; i >= 0; i--){
                 double[] blockX = elementStatics.getElement(i).getBlockX();
                 double[] blockY = elementStatics.getElement(i).getBlockY();
                 if(blockX[0] < feetX && feetX < blockX[1]
                 && blockY[0] < feetY && feetY < blockY[1]){
-                    
-                    if(elementStatics.getElement(i).getBlockFlag()) return;
+                    if(elementStatics.getElement(i).getBlockFlag()) return -1;
                     else break;
                 }
             }
@@ -90,6 +96,7 @@ public class Player {
                 layout.getChildren().add(blackBandR);
             }
         }
+        return 0;
     }
 
     public ImageView getImageView() {return imageView;}
