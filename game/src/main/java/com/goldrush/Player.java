@@ -1,5 +1,8 @@
 package com.goldrush;
 
+import java.io.File;
+import java.util.Scanner;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -14,8 +17,25 @@ public class Player {
     private double stepSize = 5;
     private double offset = 20;
 
-    public Player(String title, double initHeight, double initWidth, double initX, double initY){
+    public Player(String title){
         name = title;
+        double initWidth = 0;
+        double initHeight = 0;
+        double initX = 0;
+        double initY = 0;
+        File file = new File(System.getProperty("user.dir") + "/src/main/resources/com/goldrush/" + name + ".txt");
+        try {
+            Scanner scanIn = new Scanner(file);
+            String[] line = scanIn.nextLine().split(",", 4);
+            initHeight = Double.parseDouble(line[0]);
+            initWidth = Double.parseDouble(line[1]);
+            initX = Double.parseDouble(line[2]);
+            initY = Double.parseDouble(line[3]);
+            
+            scanIn.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
         image[0] = new Image(getClass().getResource(name + "Up.png").toString(), true);
         image[1] = new Image(getClass().getResource(name + "Down.png").toString(), true);

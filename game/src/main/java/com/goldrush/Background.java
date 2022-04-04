@@ -6,15 +6,15 @@ import java.util.Scanner;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class Menu {
+public class Background {
     private ImageView imageView;
 
-    public Menu(){
+    public Background(){
         double initWidth = 0;
         double initHeight = 0;
         double initX = 0;
         double initY = 0;
-        File file = new File(System.getProperty("user.dir") + "/src/main/resources/com/goldrush/menu.txt");
+        File file = new File(System.getProperty("user.dir") + "/src/main/resources/com/goldrush/background.txt");
         try {
             Scanner scanIn = new Scanner(file);
             String[] line = scanIn.nextLine().split(",", 4);
@@ -28,7 +28,7 @@ public class Menu {
             System.out.println(e);
         }
 
-        imageView = new ImageView(new Image(getClass().getResource("menu.png").toString(), true));
+        imageView = new ImageView(new Image(getClass().getResource("background.png").toString(), true));
         imageView.setFitWidth(initWidth);
         imageView.setFitHeight(initHeight);
         imageView.relocate(initX, initY);

@@ -28,8 +28,6 @@ public class App extends Application {
     private double fullscreenHegiht;
     private double fullscreenWidth;
     private double ratio;
-    private double backgroundWidth;
-    private double backgroundHeight;
     private double blackStripWidth;
     private double playerInitX;
     private double playerInitY;
@@ -37,9 +35,9 @@ public class App extends Application {
 
     private boolean fullscreenFlag = false;
 
-    private ImageView background = new ImageView(new Image(getClass().getResource("background.png").toString(), true));
+    private Background background = new Background();
     private ElementStatics elementStatics = new ElementStatics();
-    private Player player;
+    private Player player = new Player("player");
     private Menu menu = new Menu();
 
     private Rectangle blackBandL = new Rectangle();
@@ -61,14 +59,6 @@ public class App extends Application {
             String[] line = scanIn.nextLine().split(",", 2);
             sceneWidth = Double.parseDouble(line[0]);
             sceneHeight = Double.parseDouble(line[1]);
-
-            line = scanIn.nextLine().split(",", 2);
-            backgroundWidth = Double.parseDouble(line[0]);
-            backgroundHeight = Double.parseDouble(line[1]);
-
-            line = scanIn.nextLine().split(",", 2);
-            playerWeight = Double.parseDouble(line[0]);
-            playerHeight = Double.parseDouble(line[1]);
             
             scanIn.close();
         } catch (Exception e) {
@@ -80,16 +70,9 @@ public class App extends Application {
 
         ratio = fullscreenHegiht/sceneHeight;
         blackStripWidth = (fullscreenWidth - ratio * sceneWidth)/2;
-        playerInitX = sceneWidth/2 - playerWeight/2;
-        playerInitY = sceneHeight/2 - playerHeight/2;
 
         /*      GAME TITLE      */
         primaryStage.setTitle("Gold Rush - Forty-Niner");
-
-        /*      BACKGROUND      */
-        background.setFitWidth(backgroundWidth);
-        background.setFitHeight(backgroundHeight);
-        background.relocate(-backgroundWidth/2, -backgroundHeight/2);
 
         /*      BLACK SIDEBARS      */
         blackBandL.setWidth(0); // for moveMap
@@ -99,11 +82,8 @@ public class App extends Application {
         blackBandR.setHeight(fullscreenHegiht);
         blackBandR.relocate(blackStripWidth + ratio * sceneWidth, 0);
 
-        /*      CREATE PLAYER       */
-        player = new Player("player", playerHeight, playerWeight, playerInitX, playerInitY);
-
         /*      CREATE LAYOUT       */
-        layout.getChildren().add(background);
+        layout.getChildren().add(background.getImageView());
         for(int i = 0; i < elementStatics.size(); i++){
             layout.getChildren().add(elementStatics.getElement(i).getImageView());
         }
@@ -143,11 +123,12 @@ public class App extends Application {
     }
 
     private void moveMap(int type){
+        ImageView bground = background.getImageView();
         switch(type){
         case 0:
             return;
         case 1:
-            background.relocate(background.getLayoutX(), background.getLayoutY() + stepSize);
+            bground.relocate(bground.getLayoutX(), bground.getLayoutY() + stepSize);
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX(), current.getLayoutY() + stepSize);
@@ -161,7 +142,7 @@ public class App extends Application {
             }
             break;
         case 2:
-            background.relocate(background.getLayoutX(), background.getLayoutY() - stepSize);
+            bground.relocate(bground.getLayoutX(), bground.getLayoutY() - stepSize);
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX(), current.getLayoutY() - stepSize);
@@ -175,7 +156,7 @@ public class App extends Application {
             }
             break;
         case 3:
-            background.relocate(background.getLayoutX() + stepSize, background.getLayoutY());
+            bground.relocate(bground.getLayoutX() + stepSize, bground.getLayoutY());
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX() + stepSize, current.getLayoutY());
@@ -189,7 +170,7 @@ public class App extends Application {
             }
             break;
         case 4:
-            background.relocate(background.getLayoutX() - stepSize, background.getLayoutY());
+            bground.relocate(bground.getLayoutX() - stepSize, bground.getLayoutY());
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX() - stepSize, current.getLayoutY());
@@ -206,34 +187,21 @@ public class App extends Application {
     }
 
     private void changeResolution(Stage primaryStage){
-        background.setLayoutX(mapPositionX(background.getLayoutX()));
-        background.setLayoutY(mapSize(background.getLayoutY()));
-        background.setFitWidth(mapSize(background.getFitWidth()));
-        background.setFitHeight(mapSize(background.getFitHeight()));
+        changeResPkg(background.getImageView());
+        changeResPkg(player.getImageView());
+        changeResPkg(menu.getImageView());
+
 
         for(int i = 0; i < elementStatics.size(); i++){
-            ImageView current = elementStatics.getElement(i).getImageView();
-            current.setLayoutX(mapPositionX(current.getLayoutX()));
-            current.setLayoutY(mapSize(current.getLayoutY()));
-            current.setFitWidth(mapSize(current.getFitWidth()));
-            current.setFitHeight(mapSize(current.getFitHeight()));
+            changeResPkg(elementStatics.getElement(i).getImageView());
 
             elementStatics.getElement(i).setBlockX(mapPositionX(elementStatics.getElement(i).getBlockX()));
             elementStatics.getElement(i).setBlockY(mapSize(elementStatics.getElement(i).getBlockY()));
         }
 
-        ImageView current = player.getImageView();
-        current.setLayoutX(mapPositionX(current.getLayoutX()));
-        current.setLayoutY(mapSize(current.getLayoutY()));
-        current.setFitWidth(mapSize(current.getFitWidth()));
-        current.setFitHeight(mapSize(current.getFitHeight()));
+        stepSize = mapSize(stepSize);
 
-        current = menu.getImageView();
-        current.setLayoutX(mapPositionX(current.getLayoutX()));
-        current.setLayoutY(mapSize(current.getLayoutY()));
-        current.setFitWidth(mapSize(current.getFitWidth()));
-        current.setFitHeight(mapSize(current.getFitHeight()));
-
+        /*      BLACK SIDEBARS      */
         if(fullscreenFlag){
             player.setStepSize(player.getStepSize() / ratio);
             layout.getChildren().remove(blackBandL);
@@ -245,13 +213,17 @@ public class App extends Application {
             layout.getChildren().add(blackBandL);
             layout.getChildren().add(blackBandR);
             blackBandL.setWidth(blackStripWidth);
-            // blackBandL.setHeight(fullscreenHegiht);
-            // blackBandR.setWidth(blackStripWidth);
-            // blackBandR.setHeight(fullscreenHegiht);
         }
         
         fullscreenFlag = !fullscreenFlag;
         primaryStage.setFullScreen(fullscreenFlag);
+    }
+
+    private void changeResPkg(ImageView imageView){
+        imageView.setLayoutX(mapPositionX(imageView.getLayoutX()));
+        imageView.setLayoutY(mapSize(imageView.getLayoutY()));
+        imageView.setFitWidth(mapSize(imageView.getFitWidth()));
+        imageView.setFitHeight(mapSize(imageView.getFitHeight()));
     }
 
     private double mapPositionX(double val){
