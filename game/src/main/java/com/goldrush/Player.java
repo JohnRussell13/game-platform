@@ -70,10 +70,34 @@ public class Player extends Element {
                 }
             }
 
+            for(int i = 0; i < npcs.getSize(); i++){
+                ImageView npc = npcs.getNPCs()[i].getImageView();
+                double npcFeetX = npc.getLayoutX() + npc.getTranslateX() + npc.getFitWidth()/2;
+                double npcFeetY = npc.getLayoutY() + npc.getTranslateY() + npc.getFitHeight();
+                if(npcFeetX - 0.8*(npc.getFitWidth()/2 + imageView.getFitWidth()/2) < feetX
+                && feetX < npcFeetX + 0.8*(npc.getFitWidth()/2 + imageView.getFitWidth()/2)
+                && npcFeetY - 0.1*npc.getFitHeight() < feetY
+                && feetY < npcFeetY + 0.1*npc.getFitHeight()){
+                    return -1;
+                }
+            }
+
             imageView.relocate(newX, newY);
             
             layout.getChildren().remove(imageView);
             layout.getChildren().add(imageView);
+
+            for(int i = 0; i < npcs.getSize(); i++){
+                ImageView npc = npcs.getNPCs()[i].getImageView();
+                double npcFeetX = npc.getLayoutX()+ npc.getTranslateX() + npc.getFitWidth()/2;
+                if(npcFeetX - npc.getFitWidth()/2 - imageView.getFitWidth()/2 < feetX
+                && feetX < npcFeetX + npc.getFitWidth()/2 + imageView.getFitWidth()/2
+                && npc.getLayoutY() + npc.getTranslateY() < feetY
+                && feetY < npc.getLayoutY() + npc.getTranslateY() + npc.getFitHeight()){
+                    layout.getChildren().remove(npc);
+                    layout.getChildren().add(npc);
+                }
+            }
 
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
@@ -82,7 +106,7 @@ public class Player extends Element {
                     layout.getChildren().add(current);
                     for(int j = 0; j < npcs.getSize(); j++){
                         ImageView npc = npcs.getNPCs()[j].getImageView();
-                        double npcFeetY = npc.getLayoutY() + npc.getFitWidth();
+                        double npcFeetY = npc.getLayoutY() + npc.getFitHeight();
                         if(current.getLayoutY() + elementStatics.getElement(i).getForeground()*current.getFitHeight() < npcFeetY){
                             layout.getChildren().remove(npc);
                             layout.getChildren().add(npc);

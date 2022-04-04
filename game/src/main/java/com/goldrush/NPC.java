@@ -14,6 +14,7 @@ import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
 public class NPC {
+    private Image image[] = new Image[4]; // 4 directions
     private ImageView imageView;
     private String name;
 
@@ -91,6 +92,11 @@ public class NPC {
         imageView.setFitWidth(initWidth);
         imageView.setFitHeight(initHeight);
         imageView.relocate(initX, initY);
+
+        image[0] = new Image(getClass().getResource(name + "Up.png").toString(), true);
+        image[1] = new Image(getClass().getResource(name + "Down.png").toString(), true);
+        image[2] = new Image(getClass().getResource(name + "Left.png").toString(), true);
+        image[3] = new Image(getClass().getResource(name + "Right.png").toString(), true);
     }
 
     public ImageView getImageView() {return imageView;}
@@ -139,10 +145,16 @@ public class NPC {
         if(countAnimation % 2 == 0) {
             dX = animationPoints[qucikStorage + countAnimation];
             if(!foreward) dX = -dX;
+
+            if(dX > 0) imageView.setImage(image[3]);
+            else imageView.setImage(image[2]);
         }
         else{
             dY = animationPoints[qucikStorage + countAnimation];
             if(!foreward) dY = -dY;
+
+            if(dY > 0) imageView.setImage(image[1]);
+            else imageView.setImage(image[0]);
         }
 
         double destX = dX + (imageView.getLayoutX() + imageView.getTranslateX());
