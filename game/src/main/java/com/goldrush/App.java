@@ -1,5 +1,8 @@
 package com.goldrush;
 
+import java.io.File;
+import java.util.Scanner;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -8,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -16,17 +20,17 @@ import javafx.stage.Stage;
 public class App extends Application {
     ImageView background = new ImageView(new Image(getClass().getResource("background.png").toString(), true));
 
-    private double sceneWidth = 600;
-    private double sceneHeight = 457;
-    private double playerWeight = 37;
-    private double playerHeight = 56;
+    private double sceneWidth;
+    private double sceneHeight;
+    private double playerWeight;
+    private double playerHeight;
 
-    private double fullscreenHegiht = 1080;
-    private double fullscreenWidth = 1920;
-    private double ratio = fullscreenHegiht/sceneHeight;
-    private double blackStripWidth = (fullscreenWidth - ratio * sceneWidth)/2;
-    private double playerInitX = sceneWidth/2 - playerWeight/2;
-    private double playerInitY = sceneHeight/2 - playerHeight/2;
+    private double fullscreenHegiht;
+    private double fullscreenWidth;
+    private double ratio;
+    private double blackStripWidth;
+    private double playerInitX;
+    private double playerInitY;
 
     private boolean fullscreenFlag = false;
 
@@ -46,6 +50,31 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        /*      BACKGROUND CONFIG       */
+        File file = new File(System.getProperty("user.dir") + "/src/main/resources/com/goldrush/config.txt");
+        try {
+            Scanner scanIn = new Scanner(file);
+            String[] line = scanIn.nextLine().split(",", 11);
+            sceneWidth = Double.parseDouble(line[0]);
+            sceneHeight = Double.parseDouble(line[1]);
+
+            line = scanIn.nextLine().split(",", 11);
+            playerWeight = Double.parseDouble(line[0]);
+            playerHeight = Double.parseDouble(line[1]);
+            
+            scanIn.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        fullscreenHegiht = Screen.getPrimary().getVisualBounds().getMaxY();
+        fullscreenWidth = Screen.getPrimary().getVisualBounds().getMaxX();
+
+        ratio = fullscreenHegiht/sceneHeight;
+        blackStripWidth = (fullscreenWidth - ratio * sceneWidth)/2;
+        playerInitX = sceneWidth/2 - playerWeight/2;
+        playerInitY = sceneHeight/2 - playerHeight/2;
+
         /*      GAME TITLE      */
         primaryStage.setTitle("Gold Rush - Forty-Niner");
 
