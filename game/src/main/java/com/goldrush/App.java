@@ -139,11 +139,13 @@ public class App extends Application {
 
     private void moveMap(int type){
         ImageView bground = background.getImageView();
+        ImageView sellerNPC = seller.getImageView();
         switch(type){
         case 0:
             return;
         case 1:
             bground.relocate(bground.getLayoutX(), bground.getLayoutY() + stepSize);
+            sellerNPC.relocate(sellerNPC.getLayoutX(), sellerNPC.getLayoutY() + stepSize);
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX(), current.getLayoutY() + stepSize);
@@ -158,6 +160,7 @@ public class App extends Application {
             break;
         case 2:
             bground.relocate(bground.getLayoutX(), bground.getLayoutY() - stepSize);
+            sellerNPC.relocate(sellerNPC.getLayoutX(), sellerNPC.getLayoutY() - stepSize);
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX(), current.getLayoutY() - stepSize);
@@ -172,6 +175,7 @@ public class App extends Application {
             break;
         case 3:
             bground.relocate(bground.getLayoutX() + stepSize, bground.getLayoutY());
+            sellerNPC.relocate(sellerNPC.getLayoutX() + stepSize, sellerNPC.getLayoutY());
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX() + stepSize, current.getLayoutY());
@@ -186,6 +190,7 @@ public class App extends Application {
             break;
         case 4:
             bground.relocate(bground.getLayoutX() - stepSize, bground.getLayoutY());
+            sellerNPC.relocate(sellerNPC.getLayoutX() - stepSize, sellerNPC.getLayoutY());
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX() - stepSize, current.getLayoutY());
@@ -205,6 +210,7 @@ public class App extends Application {
         changeResPkg(background.getImageView());
         changeResPkg(player.getImageView());
         changeResPkg(menu.getImageView());
+        changeResPkg(seller.getImageView());
 
 
         for(int i = 0; i < elementStatics.size(); i++){
