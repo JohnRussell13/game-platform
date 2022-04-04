@@ -45,7 +45,7 @@ public class App extends Application {
 
     private Pane layout = new Pane();
 
-    private NPC seller = new NPC("seller");
+    private NPCs npcs = new NPCs(new String[]{"seller"});
 
 
     public static void main(String[] args) {
@@ -90,8 +90,11 @@ public class App extends Application {
             layout.getChildren().add(elementStatics.getElement(i).getImageView());
         }
         layout.getChildren().add(player.getImageView());
-        layout.getChildren().add(seller.getImageView());
         layout.getChildren().add(menu.getImageView());
+
+        for(int i = 0; i < npcs.getSize(); i++){
+            layout.getChildren().add(npcs.getNPCs()[i].getImageView());
+        }
 
         /*      CREATE THE SCENE        */
         Scene scene = new Scene(layout, sceneWidth, sceneHeight);
@@ -108,9 +111,9 @@ public class App extends Application {
                 case A:
                 case D:
                     if(fullscreenFlag) moveMap(player.move(event.getCode(), layout, elementStatics, blackBandL, blackBandR, 
-                                                            fullscreenFlag, fullscreenWidth, fullscreenHegiht));
+                                                            fullscreenFlag, fullscreenWidth, fullscreenHegiht, npcs));
                     else moveMap(player.move(event.getCode(), layout, elementStatics, blackBandL, blackBandR, 
-                                                            fullscreenFlag, sceneWidth, sceneHeight));
+                                                            fullscreenFlag, sceneWidth, sceneHeight, npcs));
                     layout.getChildren().remove(menu.getImageView());
                     layout.getChildren().add(menu.getImageView());
                     break;
@@ -119,16 +122,16 @@ public class App extends Application {
                     changeResolution(primaryStage);
                     break;
                 case P:
-                    seller.come(0);
+                    npcs.getNPCs()[0].come(0);
                     break;
                 case O:
-                    seller.go(0);
+                    npcs.getNPCs()[0].go(0);
                     break;
                 case Y:
-                    seller.come(1);
+                    npcs.getNPCs()[0].come(1);
                     break;
                 case U:
-                    seller.go(1);
+                    npcs.getNPCs()[0].go(1);
                     break;
                 default:
                     break;
@@ -139,13 +142,15 @@ public class App extends Application {
 
     private void moveMap(int type){
         ImageView bground = background.getImageView();
-        ImageView sellerNPC = seller.getImageView();
         switch(type){
         case 0:
             return;
         case 1:
             bground.relocate(bground.getLayoutX(), bground.getLayoutY() + stepSize);
-            sellerNPC.relocate(sellerNPC.getLayoutX(), sellerNPC.getLayoutY() + stepSize);
+            for(int i = 0; i < npcs.getSize(); i++){
+                ImageView current = npcs.getNPCs()[i].getImageView();
+                current.relocate(current.getLayoutX(), current.getLayoutY() + stepSize);
+            }
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX(), current.getLayoutY() + stepSize);
@@ -155,12 +160,15 @@ public class App extends Application {
                 blockY[1] += stepSize;
                 elementStatics.getElement(i).setBlockX(blockX);
                 elementStatics.getElement(i).setBlockY(blockY);
-                globalY -= stepSize;
             }
+            globalY -= stepSize;
             break;
         case 2:
             bground.relocate(bground.getLayoutX(), bground.getLayoutY() - stepSize);
-            sellerNPC.relocate(sellerNPC.getLayoutX(), sellerNPC.getLayoutY() - stepSize);
+            for(int i = 0; i < npcs.getSize(); i++){
+                ImageView current = npcs.getNPCs()[i].getImageView();
+                current.relocate(current.getLayoutX(), current.getLayoutY() - stepSize);
+            }
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX(), current.getLayoutY() - stepSize);
@@ -170,12 +178,15 @@ public class App extends Application {
                 blockY[1] -= stepSize;
                 elementStatics.getElement(i).setBlockX(blockX);
                 elementStatics.getElement(i).setBlockY(blockY);
-                globalY += stepSize;
             }
+            globalY += stepSize;
             break;
         case 3:
             bground.relocate(bground.getLayoutX() + stepSize, bground.getLayoutY());
-            sellerNPC.relocate(sellerNPC.getLayoutX() + stepSize, sellerNPC.getLayoutY());
+            for(int i = 0; i < npcs.getSize(); i++){
+                ImageView current = npcs.getNPCs()[i].getImageView();
+                current.relocate(current.getLayoutX() + stepSize, current.getLayoutY());
+            }
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX() + stepSize, current.getLayoutY());
@@ -185,12 +196,15 @@ public class App extends Application {
                 blockX[1] += stepSize;
                 elementStatics.getElement(i).setBlockX(blockX);
                 elementStatics.getElement(i).setBlockY(blockY);
-                globalX -= stepSize;
             }
+            globalX -= stepSize;
             break;
         case 4:
             bground.relocate(bground.getLayoutX() - stepSize, bground.getLayoutY());
-            sellerNPC.relocate(sellerNPC.getLayoutX() - stepSize, sellerNPC.getLayoutY());
+            for(int i = 0; i < npcs.getSize(); i++){
+                ImageView current = npcs.getNPCs()[i].getImageView();
+                current.relocate(current.getLayoutX() - stepSize, current.getLayoutY());
+            }
             for(int i = 0; i < elementStatics.size(); i++){
                 ImageView current = elementStatics.getElement(i).getImageView();
                 current.relocate(current.getLayoutX() - stepSize, current.getLayoutY());
@@ -200,8 +214,8 @@ public class App extends Application {
                 blockX[1] -= stepSize;
                 elementStatics.getElement(i).setBlockX(blockX);
                 elementStatics.getElement(i).setBlockY(blockY);
-                globalX += stepSize;
             }
+            globalX += stepSize;
             break;
         }
     }
@@ -210,8 +224,10 @@ public class App extends Application {
         changeResPkg(background.getImageView());
         changeResPkg(player.getImageView());
         changeResPkg(menu.getImageView());
-        changeResPkg(seller.getImageView());
 
+        for(int i = 0; i < npcs.getSize(); i++){
+            changeResPkg(npcs.getNPCs()[i].getImageView());
+        }
 
         for(int i = 0; i < elementStatics.size(); i++){
             changeResPkg(elementStatics.getElement(i).getImageView());

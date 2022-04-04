@@ -24,7 +24,7 @@ public class Player extends Element {
     }
 
     public int move(KeyCode direction, Pane layout, ElementStatics elementStatics, Rectangle blackBandL, Rectangle blackBandR, 
-                    boolean screenFlag, double screenWidth, double screenHeight){
+                    boolean screenFlag, double screenWidth, double screenHeight, NPCs npcs){
         double posX = imageView.getLayoutX();
         double posY = imageView.getLayoutY();
         double newX = posX;
