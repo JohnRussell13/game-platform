@@ -45,6 +45,8 @@ public class App extends Application {
 
     private Pane layout = new Pane();
 
+    private NPC seller = new NPC("seller");
+
 
     public static void main(String[] args) {
         launch();
@@ -88,6 +90,7 @@ public class App extends Application {
             layout.getChildren().add(elementStatics.getElement(i).getImageView());
         }
         layout.getChildren().add(player.getImageView());
+        layout.getChildren().add(seller.getImageView());
         layout.getChildren().add(menu.getImageView());
 
         /*      CREATE THE SCENE        */
@@ -114,6 +117,12 @@ public class App extends Application {
                 case F:
                 case ESCAPE:
                     changeResolution(primaryStage);
+                    break;
+                case P:
+                    seller.come(0);
+                    break;
+                case O:
+                    seller.go(0);
                     break;
                 default:
                     break;
