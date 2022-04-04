@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 
 public class Player {
     private Image image[] = new Image[4]; // 4 directions
@@ -27,7 +28,7 @@ public class Player {
         imageView.relocate(initX, initY); 
     }
 
-    public void move(KeyCode direction, Pane layout, ElementStatics elementStatics){
+    public void move(KeyCode direction, Pane layout, ElementStatics elementStatics, Rectangle blackBandL, Rectangle blackBandR, boolean screenFlag){
         double posX = imageView.getLayoutX();
         double posY = imageView.getLayoutY();
         double newX = posX;
@@ -80,6 +81,13 @@ public class Player {
                     layout.getChildren().remove(current);
                     layout.getChildren().add(current);
                 }
+            }
+
+            if(screenFlag){
+                layout.getChildren().remove(blackBandL);
+                layout.getChildren().add(blackBandL);
+                layout.getChildren().remove(blackBandR);
+                layout.getChildren().add(blackBandR);
             }
         }
     }

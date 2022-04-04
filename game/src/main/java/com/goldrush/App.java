@@ -3,6 +3,7 @@ package com.goldrush;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
@@ -13,6 +14,8 @@ import javafx.stage.Stage;
  * JavaFX App
  */
 public class App extends Application {
+    ImageView background = new ImageView(new Image(getClass().getResource("background.png").toString(), true));
+
     private double sceneWidth = 600;
     private double sceneHeight = 457;
     private double playerWeight = 37;
@@ -22,8 +25,6 @@ public class App extends Application {
     private double fullscreenWidth = 1920;
     private double ratio = fullscreenHegiht/sceneHeight;
     private double blackStripWidth = (fullscreenWidth - ratio * sceneWidth)/2;
-
-
     private double playerInitX = sceneWidth/2 - playerWeight/2;
     private double playerInitY = sceneHeight/2 - playerHeight/2;
 
@@ -48,6 +49,10 @@ public class App extends Application {
         /*      GAME TITLE      */
         primaryStage.setTitle("Gold Rush - Forty-Niner");
 
+        /*      BACKGROUND      */
+        background.setFitWidth(sceneWidth);
+        background.setFitHeight(sceneHeight);
+
         /*      BLACK SIDEBARS      */
         blackBandL.setWidth(blackStripWidth);
         blackBandL.setHeight(fullscreenHegiht);
@@ -60,6 +65,7 @@ public class App extends Application {
         player = new Player("player", playerHeight, playerWeight, playerInitX, playerInitY);
 
         /*      CREATE LAYOUT       */
+        layout.getChildren().add(background);
         for(int i = 0; i < elementStatics.size(); i++){
             layout.getChildren().add(elementStatics.getElement(i).getImageView());
         }
@@ -79,7 +85,7 @@ public class App extends Application {
                 case S:
                 case A:
                 case D:
-                    player.move(event.getCode(), layout, elementStatics);
+                    player.move(event.getCode(), layout, elementStatics, blackBandL, blackBandR, fullscreenFlag);
                     break;
                 case F:
                 case ESCAPE:
@@ -93,6 +99,11 @@ public class App extends Application {
     }
 
     private void changeResolution(Stage primaryStage){
+        background.setLayoutX(mapPositionX(background.getLayoutX()));
+        background.setLayoutY(mapSize(background.getLayoutY()));
+        background.setFitWidth(mapSize(background.getFitWidth()));
+        background.setFitHeight(mapSize(background.getFitHeight()));
+
         for(int i = 0; i < elementStatics.size(); i++){
             ImageView current = elementStatics.getElement(i).getImageView();
             current.setLayoutX(mapPositionX(current.getLayoutX()));
