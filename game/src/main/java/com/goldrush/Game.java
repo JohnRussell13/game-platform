@@ -19,7 +19,6 @@ public class Game {
     private boolean fph = true; // non-popUpH flag
     private boolean fpw = true; // non-popUpW flag
     private boolean fp = true; // non-popUp flag
-    private boolean fpm = false; // non-popUpM flag
     private boolean fsa[] = {false, false}; // seller flag
     // private boolean fnf = false; // near seller flag
     // private boolean fnc = false; // near seller flag
@@ -35,7 +34,13 @@ public class Game {
 
     private int countAI = -1;
 
-    public Game() {}
+    private Menu menu;
+    private PopUp popUp;
+
+    public Game(Menu mn, PopUp pu) {
+        menu = mn;
+        popUp = pu;
+    }
     
     private void makeFortyNiner(){
         week = goldRush.loadGame();
@@ -43,36 +48,39 @@ public class Game {
     }
 
 
-    public void gameplay(Pane layout, NPCs npcs, Text textPopUp, Text textMenu, Element popUp){
+    public void gameplay(Pane layout, NPCs npcs){
         switch(gp_fsm){
-        case 0:
+        case 0: // START SCREEN
             makeFortyNiner();
             msg = "GOLD RUSH\n";
             msg += "In this game, you are an ol' timer - 49er!";
             msg += "\n\nPress K to navigate";
-            textPopUp.setText(msg);
-            layout.getChildren().add(popUp.getImageView());
-            layout.getChildren().add(textPopUp);
-            fpm = false;
+
+            popUp.setMessage(msg);
+            popUp.show(layout);
+            popUp.setFlag(false);
+
             fp = false;
             break;
-        case 1:
+        case 1: // START SCREEN
             msg = "Every weekend you can go to the saloon, rest at home or fix the broken sluice.";
             msg += "\n\nPress K to navigate";
-            textPopUp.setText(msg);
+
+            popUp.setMessage(msg);
             break;
-        case 2:
+        case 2: // START SCREEN
             msg = "You will also have to buy food, but you may buy cradles as well.";
             msg += "\n\nPress K to navigate";
-            textPopUp.setText(msg);
+
+            popUp.setMessage(msg);
             break;
-        case 3:
-            layout.getChildren().remove(popUp.getImageView());
-            layout.getChildren().remove(textPopUp);
-            fpm = true;
+        case 3: // EXIT START SCREENS
+            popUp.hide(layout);
+            popUp.setFlag(true);
+
             fp = true;
             break;
-        case 4:       
+        case 4: // ENTER LOCATION
             switch(location) {
                 case "house":
                     msg = "Even God rested on Sunday!";
@@ -92,111 +100,130 @@ public class Game {
                     break;
             }
             goldRush.getFortyNiner().itIsSundayAgain(location);
-            textPopUp.setText(msg);
-            layout.getChildren().add(popUp.getImageView());
-            layout.getChildren().add(textPopUp);
-            fpm = false;
+            popUp.setMessage(msg);
+            popUp.show(layout);
+            popUp.setFlag(false);
             fp = false;
             break;
-        case 5:
-            layout.getChildren().remove(popUp.getImageView());
-            layout.getChildren().remove(textPopUp);
-            fpm = true;
+        case 5: // FOOD SELLEER COMES
+            popUp.hide(layout);
+            popUp.setFlag(true);
             fp = true;
             sellerComes(npcs.getNPCs()[0], 0);
+                
+            msg = "\n\nPress K to navigate";
+            popUp.appendMessage(msg);
+
+
+            popUp.show(layout);
+            popUp.setFlag(false);
+            fp = false;
             break;
-        case 6:
-            buyFood(layout, textPopUp, popUp);
+        case 6: // BUYING FOOD
+            popUp.hide(layout);
+            popUp.setFlag(true);
+            fp = true;
+            buyFood(layout);
             break;
-        case 7:
-            sellerGoes(layout, npcs.getNPCs()[0], textPopUp, popUp, 0);
+        case 7: // FOOD SELLER GOES
+            sellerGoes(layout, npcs.getNPCs()[0], 0);
             break;
-        case 8:
+        case 8: // ENTER LOCATION
             cmpltAnimC = true;
             msg = "You can now buy some more of those sweet cradles.";
             if(cmpltAnimB) {
                 msg += "\n\nPress K to navigate";
-                fpm = false;
+                popUp.setFlag(false);
                 fp = false;
             }
             else {
-                fpm = true;
+                popUp.setFlag(true);
                 fp = false;
             }
-            textPopUp.setText(msg);
-            layout.getChildren().add(popUp.getImageView());
-            layout.getChildren().add(textPopUp);
+            popUp.setMessage(msg);
+            popUp.show(layout);
             break;
-        case 9:
-            layout.getChildren().remove(popUp.getImageView());
-            layout.getChildren().remove(textPopUp);
-            fpm = true;
+        case 9: // CRADLES SELLER COMES
+            popUp.hide(layout);
+            popUp.setFlag(true);
             fp = true;
+
             sellerComes(npcs.getNPCs()[1], 1);
+               
+            msg = "\n\nPress K to navigate";
+            popUp.appendMessage(msg);
+
+            popUp.setMessage(msg);
+            popUp.show(layout);
+            popUp.setFlag(false);
+            fp = false;
             break;
-        case 10:
-            buyCradles(layout, textPopUp, popUp);
+        case 10: // BUYING CRADLES
+            popUp.hide(layout);
+            popUp.setFlag(true);
+            fp = true;
+            buyCradles(layout);
             break;
-        case 11:
-            sellerGoes(layout, npcs.getNPCs()[1], textPopUp, popUp, 1);
+        case 11:// CRADLES SELLER GOES
+            sellerGoes(layout, npcs.getNPCs()[1], 1);
             break;
-        case 12:
+        case 12: // END WEEK
             cmpltAnimC = true;
             msg = "You worked hard this week and some tools are now destroyed.";
             if(cmpltAnimB) {
                 msg += "\n\nPress K to navigate";
-                fpm = false;
+                popUp.setFlag(false);
                 fp = false;
             }
             else {
-                fpm = true;
+                popUp.setFlag(true);
                 fp = false;
             }
-            textPopUp.setText(msg);
-            layout.getChildren().add(popUp.getImageView());
-            layout.getChildren().add(textPopUp);
+            popUp.setMessage(msg);
+            popUp.show(layout);
+
             goldRush.getFortyNiner().useTools();
             goldRush.getFortyNiner().loseEndurance();
             break;
-        case 13:
-            layout.getChildren().remove(popUp.getImageView());
-            layout.getChildren().remove(textPopUp);
-            fpm = true;
+        case 13:// NEW WEEK STARTS
+            popUp.hide(layout);
+            popUp.setFlag(true);
             fp = true;
+
             week++;
+
             msg = "It's weekend again!";
             msg += "\n\nPress K to navigate";
-            textPopUp.setText(msg);
-            layout.getChildren().add(popUp.getImageView());
-            layout.getChildren().add(textPopUp);
-            fpm = false;
+            popUp.setMessage(msg);
+            popUp.show(layout);
+            popUp.setFlag(false);
             fp = false;
 
             if(week == 20) {
-                endgame(layout, textPopUp, popUp);
+                endgame(layout);
             }
             break;
         default:
             return;
         }
-        menuDisplay(textMenu);
+        menuDisplay();
         gp_fsm++;
         if(gp_fsm >= 14){
             gp_fsm = 3;
         }
     }
 
-    private void endgame(Pane layout, Text textPopUp, Element popUp){
-        layout.getChildren().remove(popUp.getImageView());
-        layout.getChildren().remove(textPopUp);
+    private void endgame(Pane layout){
+        popUp.hide(layout);
+        
         msg = "Congratulations!\n";
         msg += "You WON!\n";
         msg += "You survived 20 weeks in the Wild West!\n";
         msg += "Press Q to leave or\n";
         msg += "press K to continue..."; // not sure why, but K deals with it without custom flag
-        textPopUp.setText(msg);
-        layout.getChildren().add(popUp.getImageView());
-        layout.getChildren().add(textPopUp);
+        
+        popUp.setMessage(msg);
+        popUp.show(layout);
     }
 
     private void sellerComes(NPC npc, int id){
@@ -208,20 +235,14 @@ public class Game {
         cmpltAnim = false;
         npc.getImageView().setImage(npc.getImageView().getImage());
 
-        msg = "Food for this week will cost you $";
-        msg += foodPrice;
-        msg += ".";
-        msg += "\n\nPress K to navigate";
-
         cmpltAnimD = false;
         npc.come(0);
     }
 
-    private void sellerGoes(Pane layout, NPC npc, Text textPopUp, Element popUp, int id){
+    private void sellerGoes(Pane layout, NPC npc, int id){
         cmpltAnimB = false;
-        layout.getChildren().remove(popUp.getImageView());
-        layout.getChildren().remove(textPopUp);
-        fpm = true;
+        popUp.hide(layout);
+        popUp.setFlag(true);
         fp = true;
 
         fss[id] = false;
@@ -260,7 +281,7 @@ public class Game {
         npc.go(0);
     }
 
-    private void buyFood(Pane layout, Text textPopUp, Element popUp){
+    private void buyFood(Pane layout){
         foodPrice = goldRush.getFortyNiner().buyFood();
 
         msg = "Hi!\n";
@@ -269,14 +290,13 @@ public class Game {
         msg+= ".";
         if(cmpltAnim) {
             msg += "\n\nPress K to navigate";
-            fpm = false;
+            popUp.setFlag(false);
         }
-        layout.getChildren().add(popUp.getImageView());
-        textPopUp.setText(msg);
-        layout.getChildren().add(textPopUp);
+        popUp.setMessage(msg);
+        popUp.show(layout);
     }
 
-    private void buyCradles(Pane layout, Text textPopUp, Element popUp){
+    private void buyCradles(Pane layout){
         // cradle = fortyNiner.buyCradle();
 
         msg = "How many cradles do you want (M/N)?\n";
@@ -285,57 +305,56 @@ public class Game {
         msg += ".";
         if(cmpltAnim) {
             msg += "\n\nPress K to navigate";
-            fpm = false;
+            popUp.setFlag(false);
         }
-        layout.getChildren().add(popUp.getImageView());
-        textPopUp.setText(msg);
-        layout.getChildren().add(textPopUp);
+        popUp.setMessage(msg);
+        popUp.show(layout);
     }
 
-    public void enter(String name, Pane layout, Text textPopUp, Element popUp){
+    public void enter(String name, Pane layout){
         switch(name){
         case "saloon":
             if(!fps) return;
-            textPopUp.setText("Welcome to the Saloon!\n\nPress K to navigate");
+            msg = "Welcome to the Saloon!\n\nPress K to navigate";
             fps = false;
             break;
         case "house":
             if(!fph) return;
-            textPopUp.setText("Welcome Home!\n\nPress K to navigate");
+            msg = "Welcome Home!\n\nPress K to navigate";
             fph = false;
             break;
         case "workplace":
             if(!fpw) return;
-            textPopUp.setText("This time next year, you'll be a millionaire!\n\nPress K to navigate");
+            msg = "This time next year, you'll be a millionaire!\n\nPress K to navigate";
             fpw = false;
             break;
         default:
             return;
         }
-        layout.getChildren().add(popUp.getImageView());
-        layout.getChildren().add(textPopUp);
+        popUp.setMessage(msg);
+        popUp.show(layout);
         fp = false;
     }
 
-    public void exit(Pane layout, Text textPopUp, Element popUp){
-        layout.getChildren().remove(textPopUp);
-        layout.getChildren().remove(popUp.getImageView());
+    public void exit(Pane layout){
+        popUp.hide(layout);
         fps = true;
         fph = true;
         fpw = true;
         fp = true;
     }
 
-    private void menuDisplay(Text textMenu){
+    private void menuDisplay(){
         String msgs = "Week: " + week + "\n";
         msgs += "Stamina: " + goldRush.getFortyNiner().getEndurance() + "%\n";
         msgs += "Sluice health: " + goldRush.getFortyNiner().getTools().get(1).getDurability() + "%\n";
         msgs += "No. of cradles: " + (goldRush.getFortyNiner().getTools().size() - 2) + "\n";
         msgs += "Money: $" + goldRush.getFortyNiner().getMoney() + "\n";
-        textMenu.setText(msgs);
+
+        menu.setMessage(msgs);
     }
 
-    public void changeCradle(int val, Text textPopUp){
+    public void changeCradle(int val){
         if(fbc){
             cradleCount += val;
             msg = "How many cradles do you want (M/N)?\n";
@@ -344,36 +363,36 @@ public class Game {
             msg += ".";
             if(cmpltAnim || cmpltAnimD) {
                 msg += "\n\nPress K to navigate";
-                fpm = false;
+                popUp.setFlag(false);
             }
-            textPopUp.setText(msg);
+            popUp.setMessage(msg);
         }
     }
 
-    public void pressedK(Pane layout, NPCs npcs, Text textPopUp, Text textMenu, Element popUp){
+    public void pressedK(Pane layout, NPCs npcs){
         if(!fps) {
-            exit(layout, textPopUp, popUp);
+            exit(layout);
             if(gp_fsm == 4){
                 location = "saloon";
-                gameplay(layout, npcs, textPopUp, textMenu, popUp);
+                gameplay(layout, npcs);
             }
         }
         else if(!fph) {
-            exit(layout, textPopUp, popUp);
+            exit(layout);
             if(gp_fsm == 4 || gp_fsm == 8){
                 location = "house";
-                gameplay(layout, npcs, textPopUp, textMenu, popUp);
+                gameplay(layout, npcs);
             }
         }
         else if(!fpw) {
-            exit(layout, textPopUp, popUp);
+            exit(layout);
             if(gp_fsm == 4 || gp_fsm == 8 || gp_fsm == 12){
                 location = "work";
-                gameplay(layout, npcs, textPopUp, textMenu, popUp);
+                gameplay(layout, npcs);
             }
         }
-        else if(!fpm) {
-            gameplay(layout, npcs, textPopUp, textMenu, popUp);
+        else if(!popUp.getFlag()) {
+            gameplay(layout, npcs);
         }
     }
     
@@ -381,5 +400,7 @@ public class Game {
         goldRush.saveGame(week);
         Platform.exit();
     }
+
+    public PopUp getPopUp(){ return popUp; }
 
 }

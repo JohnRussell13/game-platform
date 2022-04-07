@@ -16,16 +16,23 @@ public class Player extends Element {
     private double stepSize = 5;
     private double offset = 20;
 
-    public Player(String name){
+    private Menu menu;
+    private PopUp popUp;
+
+    public Player(String name, Menu mn, PopUp pu){
         super(name);
         image[0] = new Image(getClass().getResource(name + "Up.png").toString(), true);
         image[1] = new Image(getClass().getResource(name + "Down.png").toString(), true);
         image[2] = new Image(getClass().getResource(name + "Left.png").toString(), true);
         image[3] = new Image(getClass().getResource(name + "Right.png").toString(), true);
+
+        menu = mn;
+        popUp = pu;
     }
 
     public int move(KeyCode direction, Pane layout, ElementStatics elementStatics, Rectangle blackBandL, Rectangle blackBandR, 
-                    boolean screenFlag, double screenWidth, double screenHeight, NPCs npcs, Game game, Text textPopUp, Element popUp){
+                    boolean screenFlag, double screenWidth, double screenHeight, 
+                    NPCs npcs, Game game){
         double posX = imageView.getLayoutX();
         double posY = imageView.getLayoutY();
         double newX = posX;
@@ -66,7 +73,7 @@ public class Player extends Element {
                 double[] blockY = elementStatics.getElement(i).getBlockY();
                 if(blockX[0] < feetX && feetX < blockX[1]
                 && blockY[0] < feetY && feetY < blockY[1]){
-                    game.enter(elementStatics.getElement(i).getName(), layout, textPopUp, popUp);
+                    game.enter(elementStatics.getElement(i).getName(), layout);
                     if(elementStatics.getElement(i).getBlockFlag()) return -1;
                     else break;
                 }
@@ -80,6 +87,8 @@ public class Player extends Element {
                 && feetX < npcFeetX + 0.8*(npc.getFitWidth()/2 + imageView.getFitWidth()/2)
                 && npcFeetY - 0.1*npc.getFitHeight() < feetY
                 && feetY < npcFeetY + 0.1*npc.getFitHeight()){
+                    System.out.println(i);
+                    game.gameplay(layout, npcs);
                     return -1;
                 }
             }
@@ -131,6 +140,7 @@ public class Player extends Element {
                 layout.getChildren().add(blackBandR);
             }
         }
+        menu.refresh(layout);
         return 0;
     }
 

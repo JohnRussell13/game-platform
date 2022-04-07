@@ -39,10 +39,12 @@ public class App extends Application {
 
     private boolean fullscreenFlag = false;
 
+    PopUp popUp = new PopUp();
+    Menu menu = new Menu();
+
     private Element background = new Element("background");
-    private Element menu = new Element("menu");
     private ElementStatics elementStatics = new ElementStatics();
-    private Player player = new Player("player");
+    private Player player = new Player("player", menu, popUp);
 
     private Rectangle blackBandL = new Rectangle();
     private Rectangle blackBandR = new Rectangle();
@@ -50,14 +52,7 @@ public class App extends Application {
     private Pane layout = new Pane();
 
     private NPCs npcs = new NPCs(new String[]{"sellerFood", "sellerCradles"});
-    private Game game = new Game();
-
-    private Text textPopUp = new Text();
-    private Text textMenu = new Text();
-    private Element popUp = new Element("popUp");
-    private double blur = (double)1/15;
-    private double popUpFontSize = 30;
-    private double menuFontSize = 6;
+    private Game game = new Game(menu, popUp);
 
 
 
@@ -97,23 +92,13 @@ public class App extends Application {
         blackBandR.setHeight(fullscreenHegiht);
         blackBandR.relocate(blackStripWidth + ratio * sceneWidth, 0);
 
-        /*      SET TEXT        */
-        textMenu.setTextAlignment(TextAlignment.LEFT);
-        textMenu.setWrappingWidth(menu.getImageView().getFitWidth()*0.8);
-        textMenu.setFont(new Font(menuFontSize));
-        textMenu.setX( menu.getImageView().getLayoutX() + menu.getImageView().getFitWidth()*0.5 - textMenu.getWrappingWidth()*0.5 );
-        textMenu.setY( menu.getImageView().getLayoutY() + menu.getImageView().getFitHeight()*0.2 );
-        textMenu.setLineSpacing(menu.getImageView().getFitHeight()*0.05);
-        textMenu.setEffect(new GaussianBlur(blur*menuFontSize));
-
         /*      CREATE LAYOUT       */
         layout.getChildren().add(background.getImageView());
         for(int i = 0; i < elementStatics.size(); i++){
             layout.getChildren().add(elementStatics.getElement(i).getImageView());
         }
         layout.getChildren().add(player.getImageView());
-        layout.getChildren().add(menu.getImageView());
-        layout.getChildren().add(textMenu);
+        menu.show(layout, "ABS");
 
         for(int i = 0; i < npcs.getSize(); i++){
             layout.getChildren().add(npcs.getNPCs()[i].getImageView());
@@ -134,26 +119,22 @@ public class App extends Application {
                 case A:
                 case D:
                     if(fullscreenFlag) moveMap(player.move(event.getCode(), layout, elementStatics, blackBandL, blackBandR, 
-                                                            fullscreenFlag, fullscreenWidth, fullscreenHegiht, npcs, game, 
-                                                            textPopUp, popUp));
+                                                            fullscreenFlag, fullscreenWidth, fullscreenHegiht, npcs, game));
                     else moveMap(player.move(event.getCode(), layout, elementStatics, blackBandL, blackBandR, 
-                                                            fullscreenFlag, sceneWidth, sceneHeight, npcs, game, 
-                                                            textPopUp, popUp));
-                    layout.getChildren().remove(menu.getImageView());
-                    layout.getChildren().add(menu.getImageView());
+                                                            fullscreenFlag, sceneWidth, sceneHeight, npcs, game));
                     break;
                 case F:
                 case ESCAPE:
                     changeResolution(primaryStage);
                     break;
                 case M:
-                    game.changeCradle(1, textPopUp);
+                    game.changeCradle(1);
                     break;
                 case N:
-                    game.changeCradle(-1, textPopUp);
+                    game.changeCradle(-1);
                     break;
                 case K:
-                    game.pressedK(layout, npcs, textPopUp, textMenu, popUp);
+                    game.pressedK(layout, npcs);
                     break;
                 case Q:
                     game.exitGame();
@@ -164,15 +145,7 @@ public class App extends Application {
             }
         });
 
-        textPopUp.setTextAlignment(TextAlignment.CENTER);
-        textPopUp.setWrappingWidth(popUp.getImageView().getFitWidth()*0.8);
-        textPopUp.setX( popUp.getImageView().getLayoutX() + popUp.getImageView().getFitWidth()*0.5 - textPopUp.getWrappingWidth()*0.5 );
-        textPopUp.setY( popUp.getImageView().getLayoutY() + popUp.getImageView().getFitHeight()*0.2 );
-        textPopUp.setFont(new Font(popUpFontSize));
-        textPopUp.setLineSpacing(popUp.getImageView().getFitHeight()*0.05);
-        textPopUp.setEffect(new GaussianBlur(blur*popUpFontSize));
-
-        game.gameplay(layout, npcs, textPopUp, textMenu, popUp);
+        game.gameplay(layout, npcs);
     }
 
     private void moveMap(int type){
@@ -186,7 +159,7 @@ public class App extends Application {
             double[] blockY = elementStatics.getElement(i).getBlockY();
             if(blockX[0] - stepSize < feetX && feetX < blockX[1] + stepSize
             && blockY[0] - stepSize < feetY && feetY < blockY[1] + stepSize){
-                game.enter(elementStatics.getElement(i).getName(), layout, textPopUp, popUp);
+                game.enter(elementStatics.getElement(i).getName(), layout);
                 if(elementStatics.getElement(i).getBlockFlag()) return;
                 else break;
             }
@@ -200,6 +173,8 @@ public class App extends Application {
             && feetX < npcFeetX + 0.8*(npc.getFitWidth()/2 + player.getImageView().getFitWidth()/2)
             && npcFeetY - 0.1*npc.getFitHeight() < feetY
             && feetY < npcFeetY + 0.1*npc.getFitHeight()){
+                System.out.println(i);
+                game.gameplay(layout, npcs);
                 return;
             }
         }
@@ -325,21 +300,24 @@ public class App extends Application {
             layout.getChildren().remove(blackBandR);
             layout.getChildren().add(blackBandR);
         }
+        menu.refresh(layout);
     }
 
     private void changeResolution(Stage primaryStage){
         changeResPkg(background.getImageView());
         changeResPkg(player.getImageView());
-        changeResPkg(menu.getImageView());
-        changeResPkg(popUp.getImageView());
 
-        menuFontSize = mapSize(menuFontSize);
-        popUpFontSize = mapSize(popUpFontSize);
+        changeResPkg(menu.getElement().getImageView());
+        changeResPkg(menu.getElement().getImageView());
 
-        blur = mapSize(blur);
+        menu.setFont(mapSize(menu.getFont()));
+        popUp.setFont(mapSize(popUp.getFont()));
 
-        textResPkg(textMenu, menuFontSize, blur*menuFontSize);
-        textResPkg(textPopUp, popUpFontSize, blur*popUpFontSize);
+        menu.setBlur(mapSize(menu.getBlur()));
+        popUp.setBlur(mapSize(menu.getBlur()));
+
+        textResPkg(menu.getText(), menu.getFont(), menu.getBlur()*menu.getFont());
+        textResPkg(popUp.getText(), popUp.getFont(), popUp.getBlur()*popUp.getFont());
 
         for(int i = 0; i < npcs.getSize(); i++){
             changeResPkg(npcs.getNPCs()[i].getImageView());
