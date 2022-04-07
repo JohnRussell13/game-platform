@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 public class Player extends Element {
     private Image image[] = new Image[4]; // 4 directions
@@ -24,7 +25,7 @@ public class Player extends Element {
     }
 
     public int move(KeyCode direction, Pane layout, ElementStatics elementStatics, Rectangle blackBandL, Rectangle blackBandR, 
-                    boolean screenFlag, double screenWidth, double screenHeight, NPCs npcs){
+                    boolean screenFlag, double screenWidth, double screenHeight, NPCs npcs, Game game, Text textPopUp, Element popUp){
         double posX = imageView.getLayoutX();
         double posY = imageView.getLayoutY();
         double newX = posX;
@@ -65,6 +66,7 @@ public class Player extends Element {
                 double[] blockY = elementStatics.getElement(i).getBlockY();
                 if(blockX[0] < feetX && feetX < blockX[1]
                 && blockY[0] < feetY && feetY < blockY[1]){
+                    game.enter(elementStatics.getElement(i).getName(), layout, textPopUp, popUp);
                     if(elementStatics.getElement(i).getBlockFlag()) return -1;
                     else break;
                 }
