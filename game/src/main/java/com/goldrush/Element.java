@@ -6,7 +6,7 @@ import java.util.Scanner;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class Element {
+public class Element extends World{
     protected ImageView imageView;
     protected String name;
 

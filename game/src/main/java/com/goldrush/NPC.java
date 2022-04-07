@@ -13,7 +13,7 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
-public class NPC {
+public class NPC extends World{
     private Image image[] = new Image[4]; // 4 directions
     private ImageView imageView;
     private String name;
@@ -29,8 +29,13 @@ public class NPC {
 
     private int qucikStorage;
 
-    double dX;
-    double dY;
+    private boolean direction = true;
+
+    private double dX;
+    private double dY;
+
+    private double originalX;
+    private double originalY;
 
     private double speed = 0.1;
 
@@ -100,7 +105,16 @@ public class NPC {
     }
 
     public ImageView getImageView() {return imageView;}
+    public double getAnimationPoints(int ind) {return animationPoints[ind];}
+    public void setAnimationPoints(int ind, double val) {animationPoints[ind] = val;}
     public String getName() {return name;}
+    public int getCount() {return count;}
+    public double getSpeed() {return speed;}
+    public void setSpeed(double val) {speed = val;}
+    public double getOriginalX() {return originalX;}
+    public void setOriginalX(double val) {originalX = val;}
+    public double getOriginalY() {return originalY;}
+    public void setOriginalY(double val) {originalY = val;}
 
     public void come(int part){
         countAnimation = 0;
@@ -110,8 +124,9 @@ public class NPC {
         for(int i = 0; i < part; i++){
             qucikStorage += stage[i];
         }
+        direction = true;
 
-        recursiveWalk(true);
+        recursiveWalk();
     }
 
     public void go(int part){
@@ -122,12 +137,13 @@ public class NPC {
         for(int i = 0; i < part; i++){
             qucikStorage += stage[i];
         }
+        direction = false;
 
-        recursiveWalk(false);
+        recursiveWalk();
     }
 
-    private void recursiveWalk(boolean foreward){
-        if(!foreward){
+    private void recursiveWalk(){
+        if(!direction){
             countAnimation--;
             if(countAnimation < 0){
                 return;
@@ -139,19 +155,22 @@ public class NPC {
             }
         }
 
+        originalX = imageView.getLayoutX() + imageView.getTranslateX();
+        originalY = imageView.getLayoutY() + imageView.getTranslateY();
+
         dX = 0;
         dY = 0;
 
         if(countAnimation % 2 == 0) {
             dX = animationPoints[qucikStorage + countAnimation];
-            if(!foreward) dX = -dX;
+            if(!direction) dX = -dX;
 
             if(dX > 0) imageView.setImage(image[3]);
             else imageView.setImage(image[2]);
         }
         else{
             dY = animationPoints[qucikStorage + countAnimation];
-            if(!foreward) dY = -dY;
+            if(!direction) dY = -dY;
 
             if(dY > 0) imageView.setImage(image[1]);
             else imageView.setImage(image[0]);
@@ -175,10 +194,53 @@ public class NPC {
         pathTransition.setPath(path);
 
         pathTransition.setOnFinished(event -> {
-            if(foreward) countAnimation++;
-            recursiveWalk(foreward);
+            if(direction) countAnimation++;
+            recursiveWalk();
         });
 
         pathTransition.play();
     }
+    public void continueWalk(){
+        pathTransition.stop();
+
+        System.out.println(originalX);
+
+        double completedX = (imageView.getLayoutX() + imageView.getTranslateX()) - originalX;
+        double completedY = (imageView.getLayoutY() + imageView.getTranslateY()) - originalY;
+
+        if(countAnimation % 2 == 0) {
+            dX = animationPoints[qucikStorage + countAnimation] - completedX;
+            if(!direction) dX = -dX;
+
+            if(dX > 0) imageView.setImage(image[3]);
+            else imageView.setImage(image[2]);
+        }
+        else{
+            dY = animationPoints[qucikStorage + countAnimation] - completedY;
+            if(!direction) dY = -dY;
+
+            if(dY > 0) imageView.setImage(image[1]);
+            else imageView.setImage(image[0]);
+        }
+
+        double destX = dX + (imageView.getLayoutX() + imageView.getTranslateX());
+        double destY = dY + (imageView.getLayoutY() + imageView.getTranslateY());
+
+        double posX = destX-imageView.getLayoutX()+imageView.getFitWidth()/2;
+        double posY = destY-imageView.getLayoutY()+imageView.getFitHeight()/2;
+        MoveTo moveTo = new MoveTo(imageView.getTranslateX()+imageView.getFitWidth()/2, imageView.getTranslateY()+imageView.getFitHeight()/2);
+        LineTo lineTo = new LineTo(posX, posY);
+
+        Path path = new Path();
+        path.getElements().add(moveTo);
+        path.getElements().add(lineTo);
+
+        double time = Math.sqrt(dX*dX + dY*dY) / speed;
+        pathTransition.setDuration(Duration.millis(time));
+        pathTransition.setNode(imageView);
+        pathTransition.setPath(path);
+        pathTransition.play();
+    }
+
+    public PathTransition getPath() {return pathTransition;}
 }

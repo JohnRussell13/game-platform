@@ -11,7 +11,7 @@ public class PopUp {
 
     private Text text = new Text();
     private Element popUp = new Element("popUp");
-    private double blur = (double)1/15;
+    private double blur = 0; // (double)1/15;
     private double font = 30;
     
     public PopUp(){

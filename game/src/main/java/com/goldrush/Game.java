@@ -18,7 +18,6 @@ public class Game {
     private boolean fps = true; // non-popUpS flag
     private boolean fph = true; // non-popUpH flag
     private boolean fpw = true; // non-popUpW flag
-    private boolean fp = true; // non-popUp flag
     private boolean fsa[] = {false, false}; // seller flag
     // private boolean fnf = false; // near seller flag
     // private boolean fnc = false; // near seller flag
@@ -31,6 +30,8 @@ public class Game {
     private boolean cmpltAnimB = false;
     private boolean cmpltAnimC = false;
     private boolean cmpltAnimD = false;
+
+    private boolean expecingHitFlag = false;
 
     private int countAI = -1;
 
@@ -48,7 +49,7 @@ public class Game {
     }
 
 
-    public void gameplay(Pane layout, NPCs npcs){
+    public void gameplay(Pane layout, NPCs npcs, Player player){
         switch(gp_fsm){
         case 0: // START SCREEN
             makeFortyNiner();
@@ -60,7 +61,7 @@ public class Game {
             popUp.show(layout);
             popUp.setFlag(false);
 
-            fp = false;
+            player.setPlayerFlag(false);
             break;
         case 1: // START SCREEN
             msg = "Every weekend you can go to the saloon, rest at home or fix the broken sluice.";
@@ -77,8 +78,7 @@ public class Game {
         case 3: // EXIT START SCREENS
             popUp.hide(layout);
             popUp.setFlag(true);
-
-            fp = true;
+            player.setPlayerFlag(true);
             break;
         case 4: // ENTER LOCATION
             switch(location) {
@@ -103,82 +103,58 @@ public class Game {
             popUp.setMessage(msg);
             popUp.show(layout);
             popUp.setFlag(false);
-            fp = false;
+            player.setPlayerFlag(false);
             break;
         case 5: // FOOD SELLEER COMES
             popUp.hide(layout);
             popUp.setFlag(true);
-            fp = true;
+            player.setPlayerFlag(true);
+
             sellerComes(npcs.getNPCs()[0], 0);
-                
-            msg = "\n\nPress K to navigate";
-            popUp.appendMessage(msg);
-
-
-            popUp.show(layout);
-            popUp.setFlag(false);
-            fp = false;
+            expecingHitFlag = true;
             break;
         case 6: // BUYING FOOD
-            popUp.hide(layout);
-            popUp.setFlag(true);
-            fp = true;
-            buyFood(layout);
+            expecingHitFlag = false;
+            npcInteract(layout, player, 0);
             break;
         case 7: // FOOD SELLER GOES
+            popUp.hide(layout);
+            popUp.setFlag(true);
+            player.setPlayerFlag(true);    
             sellerGoes(layout, npcs.getNPCs()[0], 0);
             break;
         case 8: // ENTER LOCATION
             cmpltAnimC = true;
             msg = "You can now buy some more of those sweet cradles.";
-            if(cmpltAnimB) {
-                msg += "\n\nPress K to navigate";
-                popUp.setFlag(false);
-                fp = false;
-            }
-            else {
-                popUp.setFlag(true);
-                fp = false;
-            }
+            msg += "\n\nPress K to navigate";
+            popUp.setFlag(false);
+            player.setPlayerFlag(false);
             popUp.setMessage(msg);
             popUp.show(layout);
             break;
         case 9: // CRADLES SELLER COMES
             popUp.hide(layout);
             popUp.setFlag(true);
-            fp = true;
+            player.setPlayerFlag(true);
 
             sellerComes(npcs.getNPCs()[1], 1);
-               
-            msg = "\n\nPress K to navigate";
-            popUp.appendMessage(msg);
-
-            popUp.setMessage(msg);
-            popUp.show(layout);
-            popUp.setFlag(false);
-            fp = false;
+            expecingHitFlag = true;
             break;
         case 10: // BUYING CRADLES
-            popUp.hide(layout);
-            popUp.setFlag(true);
-            fp = true;
-            buyCradles(layout);
+            expecingHitFlag = false;
+            npcInteract(layout, player, 1);
             break;
         case 11:// CRADLES SELLER GOES
+            popUp.hide(layout);
+            popUp.setFlag(true);
+            player.setPlayerFlag(true);    
             sellerGoes(layout, npcs.getNPCs()[1], 1);
             break;
         case 12: // END WEEK
-            cmpltAnimC = true;
             msg = "You worked hard this week and some tools are now destroyed.";
-            if(cmpltAnimB) {
-                msg += "\n\nPress K to navigate";
-                popUp.setFlag(false);
-                fp = false;
-            }
-            else {
-                popUp.setFlag(true);
-                fp = false;
-            }
+            msg += "\n\nPress K to navigate";
+            popUp.setFlag(false);
+            player.setPlayerFlag(false);
             popUp.setMessage(msg);
             popUp.show(layout);
 
@@ -188,7 +164,7 @@ public class Game {
         case 13:// NEW WEEK STARTS
             popUp.hide(layout);
             popUp.setFlag(true);
-            fp = true;
+            player.setPlayerFlag(true);
 
             week++;
 
@@ -197,7 +173,7 @@ public class Game {
             popUp.setMessage(msg);
             popUp.show(layout);
             popUp.setFlag(false);
-            fp = false;
+            player.setPlayerFlag(false);
 
             if(week == 20) {
                 endgame(layout);
@@ -227,28 +203,10 @@ public class Game {
     }
 
     private void sellerComes(NPC npc, int id){
-        fss[id] = true;
-        fsa[id] = true;
-        countAI = 0;
-        fad = true;
-        fsg = true;
-        cmpltAnim = false;
-        npc.getImageView().setImage(npc.getImageView().getImage());
-
-        cmpltAnimD = false;
         npc.come(0);
     }
 
     private void sellerGoes(Pane layout, NPC npc, int id){
-        cmpltAnimB = false;
-        popUp.hide(layout);
-        popUp.setFlag(true);
-        fp = true;
-
-        fss[id] = false;
-        fsa[id] = true;
-        fad = false;
-
         if(id == 0){
             msg = "You worked hard this week and some tools are now destroyed.";
             msg += "\n\nPress K to navigate";
@@ -275,65 +233,59 @@ public class Game {
             msg = "You worked hard this week and some tools are now destroyed.";
             msg += "\n\nPress K to navigate";
         }
-
-        cmpltAnimC = false;
-        npc.getImageView().setImage(npc.getImageView().getImage());
         npc.go(0);
     }
 
-    private void buyFood(Pane layout){
-        foodPrice = goldRush.getFortyNiner().buyFood();
+    private void npcInteract(Pane layout, Player player, int id){
+        if(id == 0){
+            foodPrice = goldRush.getFortyNiner().buyFood();
 
-        msg = "Hi!\n";
-        msg+= "Food for this week will cost you $";
-        msg+= foodPrice;
-        msg+= ".";
-        if(cmpltAnim) {
+            msg = "Hi!\n";
+            msg += "Food for this week will cost you $";
+            msg += foodPrice;
+            msg += ".";
             msg += "\n\nPress K to navigate";
-            popUp.setFlag(false);
         }
+        else{
+            // cradle = fortyNiner.buyCradle();
+    
+            msg = "How many cradles do you want (M/N)?\n";
+            msg += "No. of new cradles ";
+            msg += cradleCount;
+            msg += ".";
+            msg += "\n\nPress K to navigate";
+        }
+        popUp.setFlag(false);
         popUp.setMessage(msg);
         popUp.show(layout);
+        player.setPlayerFlag(false);
     }
 
-    private void buyCradles(Pane layout){
-        // cradle = fortyNiner.buyCradle();
-
-        msg = "How many cradles do you want (M/N)?\n";
-        msg += "No. of new cradles ";
-        msg += cradleCount;
-        msg += ".";
-        if(cmpltAnim) {
-            msg += "\n\nPress K to navigate";
-            popUp.setFlag(false);
-        }
-        popUp.setMessage(msg);
-        popUp.show(layout);
-    }
-
-    public void enter(String name, Pane layout){
+    public void enter(String name, Pane layout, Player player){
         switch(name){
         case "saloon":
             if(!fps) return;
             msg = "Welcome to the Saloon!\n\nPress K to navigate";
             fps = false;
+            player.setPlayerFlag(false);
             break;
         case "house":
             if(!fph) return;
             msg = "Welcome Home!\n\nPress K to navigate";
             fph = false;
+            player.setPlayerFlag(false);
             break;
         case "workplace":
             if(!fpw) return;
             msg = "This time next year, you'll be a millionaire!\n\nPress K to navigate";
             fpw = false;
+            player.setPlayerFlag(false);
             break;
         default:
             return;
         }
         popUp.setMessage(msg);
         popUp.show(layout);
-        fp = false;
     }
 
     public void exit(Pane layout){
@@ -341,7 +293,6 @@ public class Game {
         fps = true;
         fph = true;
         fpw = true;
-        fp = true;
     }
 
     private void menuDisplay(){
@@ -369,36 +320,43 @@ public class Game {
         }
     }
 
-    public void pressedK(Pane layout, NPCs npcs){
+    public void pressedK(Pane layout, NPCs npcs, Player player){
         if(!fps) {
             exit(layout);
+            player.setPlayerFlag(true);
             if(gp_fsm == 4){
                 location = "saloon";
-                gameplay(layout, npcs);
+                gameplay(layout, npcs, player);
             }
         }
         else if(!fph) {
             exit(layout);
+            player.setPlayerFlag(true);
             if(gp_fsm == 4 || gp_fsm == 8){
                 location = "house";
-                gameplay(layout, npcs);
+                gameplay(layout, npcs, player);
             }
         }
         else if(!fpw) {
             exit(layout);
+            player.setPlayerFlag(true);
             if(gp_fsm == 4 || gp_fsm == 8 || gp_fsm == 12){
                 location = "work";
-                gameplay(layout, npcs);
+                gameplay(layout, npcs, player);
             }
         }
         else if(!popUp.getFlag()) {
-            gameplay(layout, npcs);
+            gameplay(layout, npcs, player);
         }
     }
     
     public void exitGame(){
         goldRush.saveGame(week);
         Platform.exit();
+    }
+
+    public void npcHit(Pane layout, NPCs npcs, int id, Player player){
+        if(expecingHitFlag) gameplay(layout, npcs, player);
     }
 
     public PopUp getPopUp(){ return popUp; }

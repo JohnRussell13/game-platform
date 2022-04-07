@@ -10,10 +10,10 @@ public class Menu {
     private Element menu = new Element("menu");
     
     private Text text = new Text();
-    private double blur = (double)1/15;
+    private double blur = 0; // (double)1/15;
     private double font = 6;
 
-    public Menu(){
+    public Menu(Pane layout){
         /*      SET TEXT        */
         text.setTextAlignment(TextAlignment.LEFT);
         text.setWrappingWidth(menu.getImageView().getFitWidth()*0.8);
@@ -22,6 +22,9 @@ public class Menu {
         text.setY( menu.getImageView().getLayoutY() + menu.getImageView().getFitHeight()*0.2 );
         text.setLineSpacing(menu.getImageView().getFitHeight()*0.05);
         text.setEffect(new GaussianBlur(blur*font));
+
+        layout.getChildren().add(menu.getImageView());
+        layout.getChildren().add(text);
     }
 
     public double getFont() {return font;}
@@ -43,7 +46,6 @@ public class Menu {
         layout.getChildren().add(menu.getImageView());
         layout.getChildren().add(text);
     }
-
 
     public void refresh(Pane layout) {
         layout.getChildren().remove(menu.getImageView());
