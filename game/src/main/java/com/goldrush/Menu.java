@@ -17,7 +17,7 @@ public class Menu {
         /*      SET TEXT        */
         text.setTextAlignment(TextAlignment.LEFT);
         text.setWrappingWidth(menu.getImageView().getFitWidth()*0.8);
-        text.setFont(new Font(font));
+        text.setFont(new Font("Times New Roman", font));
         text.setX( menu.getImageView().getLayoutX() + menu.getImageView().getFitWidth()*0.5 - text.getWrappingWidth()*0.5 );
         text.setY( menu.getImageView().getLayoutY() + menu.getImageView().getFitHeight()*0.2 );
         text.setLineSpacing(menu.getImageView().getFitHeight()*0.05);

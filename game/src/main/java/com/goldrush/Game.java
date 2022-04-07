@@ -32,6 +32,7 @@ public class Game {
     private boolean cmpltAnimD = false;
 
     private boolean expecingHitFlag = false;
+    private boolean buyingCradlesFlag = false;
 
     private int countAI = -1;
 
@@ -124,7 +125,6 @@ public class Game {
             sellerGoes(layout, npcs.getNPCs()[0], 0);
             break;
         case 8: // ENTER LOCATION
-            cmpltAnimC = true;
             msg = "You can now buy some more of those sweet cradles.";
             msg += "\n\nPress K to navigate";
             popUp.setFlag(false);
@@ -143,8 +143,10 @@ public class Game {
         case 10: // BUYING CRADLES
             expecingHitFlag = false;
             npcInteract(layout, player, 1);
+            buyingCradlesFlag = true;
             break;
         case 11:// CRADLES SELLER GOES
+            buyingCradlesFlag = false;
             popUp.hide(layout);
             popUp.setFlag(true);
             player.setPlayerFlag(true);    
@@ -306,16 +308,13 @@ public class Game {
     }
 
     public void changeCradle(int val){
-        if(fbc){
+        if(buyingCradlesFlag){
             cradleCount += val;
             msg = "How many cradles do you want (M/N)?\n";
             msg += "No. of new cradles ";
             msg += cradleCount;
             msg += ".";
-            if(cmpltAnim || cmpltAnimD) {
-                msg += "\n\nPress K to navigate";
-                popUp.setFlag(false);
-            }
+            msg += "\n\nPress K to navigate";
             popUp.setMessage(msg);
         }
     }

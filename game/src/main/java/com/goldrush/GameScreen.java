@@ -446,7 +446,7 @@ public class GameScreen extends World {
         text.setWrappingWidth( mapSize(text.getWrappingWidth()) );
         text.setX( mapPositionX(text.getX()) );
         text.setY( mapSize(text.getY()) );
-        text.setFont(new Font(font));
+        text.setFont(Font.font("Times New Roman", font));
         text.setLineSpacing( mapSize(text.getLineSpacing()) );
         text.setEffect(new GaussianBlur(blr));
     }

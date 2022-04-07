@@ -20,7 +20,7 @@ public class PopUp {
         text.setWrappingWidth(popUp.getImageView().getFitWidth()*0.8);
         text.setX( popUp.getImageView().getLayoutX() + popUp.getImageView().getFitWidth()*0.5 - text.getWrappingWidth()*0.5 );
         text.setY( popUp.getImageView().getLayoutY() + popUp.getImageView().getFitHeight()*0.2 );
-        text.setFont(new Font(font));
+        text.setFont(new Font("Hothead", font));
         text.setLineSpacing(popUp.getImageView().getFitHeight()*0.05);
         text.setEffect(new GaussianBlur(blur*font));
     }
