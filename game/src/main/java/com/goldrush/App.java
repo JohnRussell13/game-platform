@@ -142,6 +142,32 @@ public class App extends Application {
 
     private void moveMap(int type){
         ImageView bground = background.getImageView();
+
+        double feetX = player.getImageView().getLayoutX() + player.getImageView().getFitWidth()/2;
+        double feetY = player.getImageView().getLayoutY() + player.getImageView().getFitHeight();
+
+        for(int i = elementStatics.size()-1; i >= 0; i--){
+            double[] blockX = elementStatics.getElement(i).getBlockX();
+            double[] blockY = elementStatics.getElement(i).getBlockY();
+            if(blockX[0] - stepSize < feetX && feetX < blockX[1] + stepSize
+            && blockY[0] - stepSize < feetY && feetY < blockY[1] + stepSize){
+                if(elementStatics.getElement(i).getBlockFlag()) return;
+                else break;
+            }
+        }
+
+        for(int i = 0; i < npcs.getSize(); i++){
+            ImageView npc = npcs.getNPCs()[i].getImageView();
+            double npcFeetX = npc.getLayoutX() + npc.getTranslateX() + npc.getFitWidth()/2;
+            double npcFeetY = npc.getLayoutY() + npc.getTranslateY() + npc.getFitHeight();
+            if(npcFeetX - 0.8*(npc.getFitWidth()/2 + player.getImageView().getFitWidth()/2) < feetX
+            && feetX < npcFeetX + 0.8*(npc.getFitWidth()/2 + player.getImageView().getFitWidth()/2)
+            && npcFeetY - 0.1*npc.getFitHeight() < feetY
+            && feetY < npcFeetY + 0.1*npc.getFitHeight()){
+                return;
+            }
+        }
+
         switch(type){
         case 0:
             return;
@@ -217,6 +243,51 @@ public class App extends Application {
             }
             globalX += stepSize;
             break;
+        }
+                    
+        layout.getChildren().remove(player.getImageView());
+        layout.getChildren().add(player.getImageView());
+
+        for(int i = 0; i < npcs.getSize(); i++){
+            ImageView npc = npcs.getNPCs()[i].getImageView();
+            double npcFeetX = npc.getLayoutX()+ npc.getTranslateX() + npc.getFitWidth()/2;
+            if(npcFeetX - npc.getFitWidth()/2 - player.getImageView().getFitWidth()/2 < feetX
+            && feetX < npcFeetX + npc.getFitWidth()/2 + player.getImageView().getFitWidth()/2
+            && npc.getLayoutY() + npc.getTranslateY() < feetY
+            && feetY < npc.getLayoutY() + npc.getTranslateY() + npc.getFitHeight()){
+                layout.getChildren().remove(npc);
+                layout.getChildren().add(npc);
+            }
+        }
+
+        for(int i = 0; i < elementStatics.size(); i++){
+            ImageView current = elementStatics.getElement(i).getImageView();
+            if(current.getLayoutY() + elementStatics.getElement(i).getForeground()*current.getFitHeight() > feetY){
+                layout.getChildren().remove(current);
+                layout.getChildren().add(current);
+                for(int j = 0; j < npcs.getSize(); j++){
+                    ImageView npc = npcs.getNPCs()[j].getImageView();
+                    double npcFeetY = npc.getLayoutY() + npc.getFitHeight();
+                    if(current.getLayoutY() + elementStatics.getElement(i).getForeground()*current.getFitHeight() < npcFeetY){
+                        layout.getChildren().remove(npc);
+                        layout.getChildren().add(npc);
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < npcs.getSize(); i++){
+            ImageView current = npcs.getNPCs()[i].getImageView();
+            if(current.getLayoutY() + elementStatics.getElement(i).getForeground()*current.getFitHeight() > feetY){
+                layout.getChildren().remove(current);
+                layout.getChildren().add(current);
+            }
+        }
+
+        if(fullscreenFlag){
+            layout.getChildren().remove(blackBandL);
+            layout.getChildren().add(blackBandL);
+            layout.getChildren().remove(blackBandR);
+            layout.getChildren().add(blackBandR);
         }
     }
 
