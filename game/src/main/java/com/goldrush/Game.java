@@ -14,27 +14,10 @@ public class Game {
     private int foodPrice = 0;
     private int cradleCount = 0;
 
-    private boolean fs = true; // non-fullscreen flag
     private boolean fps = true; // non-popUpS flag
     private boolean fph = true; // non-popUpH flag
     private boolean fpw = true; // non-popUpW flag
-    private boolean fsa[] = {false, false}; // seller flag
-    // private boolean fnf = false; // near seller flag
-    // private boolean fnc = false; // near seller flag
-    private boolean fss[] = {false, false}; // selling seller flag
-    private boolean fsg = false; // selling seller flag
-    private boolean fad = true; // AnimPoint direction flag
-    private boolean fbc = false; // AnimPoint direction flag
-    private boolean feg = false; // EndGame read from keyboard flag
-    private boolean cmpltAnim = false;
-    private boolean cmpltAnimB = false;
-    private boolean cmpltAnimC = false;
-    private boolean cmpltAnimD = false;
-
-    private boolean expecingHitFlag = false;
     private boolean buyingCradlesFlag = false;
-
-    private int countAI = -1;
 
     private Menu menu;
     private PopUp popUp;
@@ -112,10 +95,8 @@ public class Game {
             player.setPlayerFlag(true);
 
             sellerComes(npcs.getNPCs()[0], 0);
-            expecingHitFlag = true;
             break;
         case 6: // BUYING FOOD
-            expecingHitFlag = false;
             npcInteract(layout, player, 0);
             break;
         case 7: // FOOD SELLER GOES
@@ -138,10 +119,8 @@ public class Game {
             player.setPlayerFlag(true);
 
             sellerComes(npcs.getNPCs()[1], 1);
-            expecingHitFlag = true;
             break;
         case 10: // BUYING CRADLES
-            expecingHitFlag = false;
             npcInteract(layout, player, 1);
             buyingCradlesFlag = true;
             break;
@@ -214,8 +193,6 @@ public class Game {
             msg += "\n\nPress K to navigate";
         }
         else{
-            fbc = false;
-
             int newMoney = cradleCount * 30;
     
             while(goldRush.getFortyNiner().getMoney() < newMoney) {
@@ -355,7 +332,7 @@ public class Game {
     }
 
     public void npcHit(Pane layout, NPCs npcs, int id, Player player){
-        if(expecingHitFlag) gameplay(layout, npcs, player);
+        if(npcs.getNPCs()[id].getFlag()) gameplay(layout, npcs, player);
     }
 
     public PopUp getPopUp(){ return popUp; }

@@ -157,12 +157,20 @@ public class FortyNiner {
     }
 
     private void goToSaloon() {
-        money -= rnd.nextInt(200 - 50 + 1) + 50;
+        int newMoney = rnd.nextInt(200 - 50 + 1) + 50;
+        money -= newMoney;
 
-        endurance += rnd.nextInt(50 - 5 + 1) + 5;
-        if(endurance > 100) endurance = 100;
+        if(money < 0){
+            money += newMoney;
 
-        System.out.println("You saved $" + money + " for next Sunday! Endurance right now is at " + endurance + "%!");
+            System.out.println("Oh no! No money for the drink...");
+        }
+        else{
+            endurance += rnd.nextInt(50 - 5 + 1) + 5;
+            if(endurance > 100) endurance = 100;
+    
+            System.out.println("You saved $" + money + " for next Sunday! Endurance right now is at " + endurance + "%!");
+        }
     }
 
     private void fixSluice() {

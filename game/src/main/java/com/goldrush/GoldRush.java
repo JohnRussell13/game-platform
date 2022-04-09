@@ -10,7 +10,7 @@ public class GoldRush {
     private int week;
 
     public GoldRush() {
-        savedGame = new File("GoldRushSaved.txt");
+        savedGame = new File("gamesave.txt");
         // System.out.println("GoldRush");
     }
 

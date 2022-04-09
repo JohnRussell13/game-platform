@@ -18,6 +18,8 @@ public class NPC extends World{
     private ImageView imageView;
     private String name;
 
+    private boolean talkToMeFlag = false;
+
     private PathTransition pathTransition = new PathTransition();
 
     private double[] animationPoints;
@@ -115,6 +117,7 @@ public class NPC extends World{
     public void setOriginalX(double val) {originalX = val;}
     public double getOriginalY() {return originalY;}
     public void setOriginalY(double val) {originalY = val;}
+    public boolean getFlag() {return talkToMeFlag;}
 
     public void come(int part){
         countAnimation = 0;
@@ -126,10 +129,14 @@ public class NPC extends World{
         }
         direction = true;
 
+        talkToMeFlag = false;
+
         recursiveWalk();
     }
 
     public void go(int part){
+        talkToMeFlag = false;
+
         countAnimation = stage[part];
         stagesStage = part;
 
@@ -146,11 +153,13 @@ public class NPC extends World{
         if(!direction){
             countAnimation--;
             if(countAnimation < 0){
+                talkToMeFlag = true;
                 return;
             }
         }
         else{
             if(countAnimation >= stage[stagesStage]) {
+                talkToMeFlag = true;
                 return;
             }
         }
