@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="9.0.6" transformSequenceNumber="9">
-  <directoryPresets config="/home/aleksandar/Desktop/install49" />
-  <application name="FortyNiner" applicationId="0652-8286-2134-5986" mediaDir="/home/aleksandar/Desktop/install49/" shortName="FortyNiner" publisher="Arctic99" version="1.0" macVolumeId="7ae9f6035d7b0da9">
+  <directoryPresets config="/home/aleksandar/Documents/Masters/Projects/game-platform/game" />
+  <application name="Gold Rush - Forty-Niner" applicationId="0652-8286-2134-5986" mediaDir="/home/aleksandar/Desktop/install_49/" shortName="FortyNiner" publisher="Arctic99" version="1.0" macVolumeId="7ae9f6035d7b0da9">
     <jreBundles jdkProviderId="Liberica" release="11/latest">
       <modules>
         <defaultModules set="all" />
@@ -14,13 +14,14 @@
       <mountPoint id="24" />
     </mountPoints>
     <entries>
-      <dirEntry mountPoint="24" file="/home/aleksandar/Documents/Masters/Projects/java/Game/game" subDirectory="game">
+      <dirEntry mountPoint="24" file="/home/aleksandar/Documents/Masters/Projects/game-platform/game" subDirectory="game">
         <exclude>
+          <entry location="licence" />
           <entry location="target/generated-sources" />
-          <entry location="target/maven-archiver" />
           <entry location="target/maven-status" />
-          <entry location="target/game-1.0.jar" />
           <entry location="target/image" />
+          <entry location="target/test-classes" />
+          <entry location="readMe" />
           <entry location="pom.xml" />
           <entry location="src/main/java" />
         </exclude>
@@ -36,7 +37,7 @@
         </classPath>
       </java>
       <iconImageFiles>
-        <file path="/home/aleksandar/Documents/Masters/Projects/java/Game/game/target/classes/com/goldrush/playerRight.png" />
+        <file path="/home/aleksandar/Documents/Masters/Projects/game-platform/game/src/main/resources/com/goldrush/playerRight.png" />
       </iconImageFiles>
     </launcher>
   </launchers>
@@ -89,6 +90,38 @@ return console.askOkCancel(message, true);
                 <serializedBean>
                   <property name="labelText" type="string">${i18n:ClickNext}</property>
                 </serializedBean>
+              </formComponent>
+            </formComponents>
+          </screen>
+          <screen id="36" beanClass="com.install4j.runtime.beans.screens.LicenseScreen" rollbackBarrierExitCode="0">
+            <formComponents>
+              <formComponent id="37" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
+                <serializedBean>
+                  <property name="labelText" type="string">${i18n:LicenseLabel3}</property>
+                </serializedBean>
+              </formComponent>
+              <formComponent id="38" beanClass="com.install4j.runtime.beans.formcomponents.LicenseComponent" useExternalParametrization="true" externalParametrizationName="License Agreement" externalParametrizationMode="include">
+                <serializedBean>
+                  <property name="displayedTextFile" id="LocalizedExternalFile0">
+                    <property name="languageIdToExternalFile">
+                      <entry>
+                        <string>en</string>
+                        <object class="com.install4j.api.beans.ExternalFile">
+                          <string>/home/aleksandar/Documents/Masters/Projects/game-platform/game/licence.txt</string>
+                        </object>
+                      </entry>
+                    </property>
+                  </property>
+                  <property name="fillVertical" type="boolean" value="true" />
+                </serializedBean>
+                <externalParametrizationPropertyNames>
+                  <propertyName>textSource</propertyName>
+                  <propertyName>displayedText</propertyName>
+                  <propertyName>displayedTextFile</propertyName>
+                  <propertyName>variableName</propertyName>
+                  <propertyName>acceptInitiallySelected</propertyName>
+                  <propertyName>readAllRequired</propertyName>
+                </externalParametrizationPropertyNames>
               </formComponent>
             </formComponents>
           </screen>
@@ -172,10 +205,43 @@ return console.askOkCancel(message, true);
             </formComponents>
           </screen>
           <screen id="20" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" styleId="7" rollbackBarrierExitCode="0" finishScreen="true">
+            <actions>
+              <action id="39" beanClass="com.install4j.runtime.beans.actions.desktop.CreateDesktopLinkAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="file">
+                    <object class="java.io.File">
+                      <string>FortyNiner</string>
+                    </object>
+                  </property>
+                  <property name="name" type="string">${compiler:sys.fullName}</property>
+                </serializedBean>
+                <condition>context.getBooleanVariable("createDesktopLinkAction")</condition>
+              </action>
+              <action id="43" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" actionElevationType="none" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="launcherId" type="string">25</property>
+                </serializedBean>
+                <condition>context.getBooleanVariable("executeLauncherAction") &amp;&amp; (!context.isUnattended())</condition>
+              </action>
+            </actions>
             <formComponents>
               <formComponent id="21" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent" insetBottom="10">
                 <serializedBean>
                   <property name="labelText" type="string">${form:finishedMessage}</property>
+                </serializedBean>
+              </formComponent>
+              <formComponent name="Add a desktop link" id="40" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
+                <serializedBean>
+                  <property name="checkboxText" type="string">${i18n:CreateDesktopIcon}</property>
+                  <property name="initiallySelected" type="boolean" value="true" />
+                  <property name="variableName" type="string">createDesktopLinkAction</property>
+                </serializedBean>
+              </formComponent>
+              <formComponent name="Execute launcher" id="44" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
+                <serializedBean>
+                  <property name="checkboxText" type="string">${i18n:RunEntryExec("${compiler:sys.fullName}")}</property>
+                  <property name="initiallySelected" type="boolean" value="true" />
+                  <property name="variableName" type="string">executeLauncherAction</property>
                 </serializedBean>
               </formComponent>
             </formComponents>
